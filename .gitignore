@@ -16,3 +16,5 @@ Thumbs.db
 
 # Results are tracked (raw data is valuable)
 # results/ is NOT ignored
+# Charts are regenerable from raw data
+results/charts/
