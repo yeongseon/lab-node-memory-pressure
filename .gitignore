@@ -1,0 +1,18 @@
+node_modules/
+*.zip
+.env
+.env.*
+
+# Azure deployment artifacts
+*.json.bak
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Results are tracked (raw data is valuable)
+# results/ is NOT ignored
