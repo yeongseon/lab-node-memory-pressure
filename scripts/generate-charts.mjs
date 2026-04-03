@@ -191,6 +191,12 @@ function rollingAverage(values, windowSize) {
   return out;
 }
 
+function timeOnly(isoString) {
+  const s = String(isoString);
+  const match = s.match(/T(\d{2}:\d{2})/);
+  return match ? match[1] : s.length > 5 ? s.slice(11, 16) : s;
+}
+
 function rollingErrorRate(values, windowSize) {
   const out = [];
   const q = [];
@@ -253,9 +259,10 @@ async function generateCpuMemoryTimeline(inputDir, outputDir) {
     if (r.metric === 'MemoryPercentage') point.memory = toNumber(r.value);
   }
 
-  const labels = [...byTs.keys()];
-  const cpu = labels.map((l) => byTs.get(l).cpu);
-  const memory = labels.map((l) => byTs.get(l).memory);
+  const tsKeys = [...byTs.keys()];
+  const labels = tsKeys.map(timeOnly);
+  const cpu = tsKeys.map((l) => byTs.get(l).cpu);
+  const memory = tsKeys.map((l) => byTs.get(l).memory);
 
   await renderPng({
     outputFile: path.join(outputDir, 'cpu-memory-timeline.png'),
@@ -296,7 +303,7 @@ async function loadDiagSummary(inputDir) {
 
 async function generateKernelReclaimTimeline(diagRows, outputDir) {
   if (!diagRows || !diagRows.length) return null;
-  const labels = diagRows.map((r) => r.ts);
+  const labels = diagRows.map((r) => r.ts).map(timeOnly);
   const metrics = [
     ['pgscan_kswapd', PALETTE.purple],
     ['pgscan_direct', '#8e44ad'],
@@ -327,7 +334,7 @@ async function generateKernelReclaimTimeline(diagRows, outputDir) {
 
 async function generateSwapActivityTimeline(diagRows, outputDir) {
   if (!diagRows || !diagRows.length) return null;
-  const labels = diagRows.map((r) => r.ts);
+  const labels = diagRows.map((r) => r.ts).map(timeOnly);
   const pswpin = deltaSeries(diagRows.map((r) => toNumber(r.pswpin)));
   const pswpout = deltaSeries(diagRows.map((r) => toNumber(r.pswpout)));
   if (![...pswpin, ...pswpout].some((v) => v !== null && v !== 0)) {
@@ -351,7 +358,7 @@ async function generateSwapActivityTimeline(diagRows, outputDir) {
 
 async function generateMemoryBreakdownTimeline(diagRows, outputDir) {
   if (!diagRows || !diagRows.length) return null;
-  const labels = diagRows.map((r) => r.ts);
+  const labels = diagRows.map((r) => r.ts).map(timeOnly);
   const datasets = [
     makeLineDataset('MemTotal (KB)', diagRows.map((r) => toNumber(r.memTotal_kb)), PALETTE.dark),
     makeLineDataset('MemFree (KB)', diagRows.map((r) => toNumber(r.memFree_kb)), PALETTE.green),
@@ -378,7 +385,7 @@ async function generateLatencyTimeline(inputDir, outputDir) {
   if (!rows || !rows.length) return null;
 
   const sorted = sortByTs(rows, 'ts');
-  const labels = sorted.map((r) => r.ts);
+  const labels = sorted.map((r) => r.ts).map(timeOnly);
   const elapsed = sorted.map((r) => toNumber(r.elapsed_ms)).map((v) => v ?? 0);
   const errors = sorted.map((r) => Boolean((r.error || '').trim()) || (toNumber(r.status) ?? 200) >= 400);
 
@@ -426,7 +433,8 @@ async function generateAppRssTimeline(diagRows, outputDir) {
     return null;
   }
 
-  const labels = [...new Set(diagRows.map((r) => r.ts))].sort();
+  const tsKeys = [...new Set(diagRows.map((r) => r.ts))].sort();
+  const labels = tsKeys.map(timeOnly);
   const byAppTs = new Map();
   for (const row of diagRows) {
     const key = `${row.app}::${row.ts}`;
@@ -435,7 +443,7 @@ async function generateAppRssTimeline(diagRows, outputDir) {
 
   const colors = [PALETTE.blue, PALETTE.red, PALETTE.green, PALETTE.purple, PALETTE.orange, PALETTE.teal, '#34495e', '#7f8c8d'];
   const datasets = apps.map((app, idx) => {
-    const mb = labels.map((ts) => {
+    const mb = tsKeys.map((ts) => {
       const n = byAppTs.get(`${app}::${ts}`);
       return n === null || n === undefined ? null : n / 1024 / 1024;
     });
@@ -635,6 +643,103 @@ async function generateBurstLatencyDistribution(inputDir, outputDir) {
   return 'burst-latency-distribution.png';
 }
 
+async function generateTrafficCpuTimeline(inputDir, outputDir) {
+  const trafficRows = await readCsvIfExists(path.join(inputDir, 'traffic.csv'));
+  const metricsRows = await readCsvIfExists(path.join(inputDir, 'azure-metrics.csv'));
+  if (!trafficRows || !metricsRows) return null;
+
+  const phaseTrafficRows = await readCsvIfExists(path.join(inputDir, 'traffic-phase0-2a.csv'));
+  const allTrafficRows = [...trafficRows, ...(phaseTrafficRows || [])];
+
+  const rpmByMinute = new Map();
+  for (const row of allTrafficRows) {
+    const minute = String(row.ts || '').slice(0, 16);
+    if (!minute) continue;
+    rpmByMinute.set(minute, (rpmByMinute.get(minute) || 0) + 1);
+  }
+
+  const cpuByMinute = new Map();
+  for (const row of metricsRows) {
+    if (row.resource_type !== 'plan' || row.metric !== 'CpuPercentage') continue;
+    const minute = String(row.snap_ts || '').slice(0, 16);
+    if (!minute) continue;
+    cpuByMinute.set(minute, toNumber(row.value));
+  }
+
+  const minuteKeys = [...new Set([...rpmByMinute.keys(), ...cpuByMinute.keys()])].sort();
+  if (!minuteKeys.length) {
+    console.warn('[charts] warn no traffic/cpu timeline points found');
+    return null;
+  }
+
+  const rpmValues = minuteKeys.map((minute) => rpmByMinute.get(minute) || 0);
+  const cpuValues = minuteKeys.map((minute) => cpuByMinute.get(minute) ?? null);
+  const labels = minuteKeys.map(timeOnly);
+
+  const chartJSNodeCanvas = new ChartJSNodeCanvas({ width: 1200, height: 600, backgroundColour: 'white' });
+  const config = {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Requests / min',
+          data: rpmValues,
+          backgroundColor: 'rgba(26, 188, 156, 0.6)',
+          borderColor: PALETTE.teal,
+          borderWidth: 1,
+          yAxisID: 'yRpm',
+          order: 2,
+        },
+        {
+          type: 'line',
+          label: 'CPU %',
+          data: cpuValues,
+          borderColor: PALETTE.red,
+          backgroundColor: PALETTE.red,
+          borderWidth: 2,
+          tension: 0.2,
+          pointRadius: 0,
+          yAxisID: 'yCpu',
+          order: 1,
+        },
+      ],
+    },
+    options: {
+      ...chartBaseOptions('Traffic Volume (RPM) vs CPU% — Steady State'),
+      scales: {
+        x: {
+          ...chartBaseOptions('').scales.x,
+          ticks: {
+            ...chartBaseOptions('').scales.x.ticks,
+            maxTicksLimit: 20,
+          },
+        },
+        yRpm: {
+          type: 'linear',
+          position: 'left',
+          beginAtZero: true,
+          title: { display: true, text: 'Requests / min' },
+          grid: { color: 'rgba(127, 140, 141, 0.2)' },
+        },
+        yCpu: {
+          type: 'linear',
+          position: 'right',
+          min: 0,
+          max: 100,
+          title: { display: true, text: 'CPU %' },
+          grid: { drawOnChartArea: false },
+        },
+      },
+    },
+  };
+
+  const buffer = await chartJSNodeCanvas.renderToBuffer(config, 'image/png');
+  await fs.writeFile(path.join(outputDir, 'traffic-cpu-timeline.png'), buffer);
+  return 'traffic-cpu-timeline.png';
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const inputDir = path.resolve(args.input || 'results/');
@@ -655,6 +760,7 @@ async function main() {
     () => generateAppRssTimeline(diagRows, outputDir),
     () => generatePhaseComparison(inputDir, outputDir),
     () => generateBurstLatencyDistribution(inputDir, outputDir),
+    () => generateTrafficCpuTimeline(inputDir, outputDir),
   ];
 
   for (const fn of fns) {

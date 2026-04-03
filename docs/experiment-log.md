@@ -89,6 +89,9 @@ Deployed 2 Node.js applications (50MB RSS each). Verified that the `/diag/proc` 
 ![Burst Latency Distribution](assets/charts/zip-deploy/burst-latency-distribution.png)
 *Figure 6: Burst traffic latency histogram.*
 
+![Traffic Volume vs CPU](assets/charts/zip-deploy/traffic-cpu-timeline.png)
+*Figure 7: Steady-state traffic volume (RPM) overlaid with CPU%. Traffic remained flat at ~6 RPM (1 req/10s × 6 apps) throughout all phases, while CPU rose from 15% to 35%+ during memory pressure — confirming the CPU increase was not driven by traffic.*
+
 ---
 
 ## Container Deploy Experiment
@@ -133,16 +136,19 @@ An attempt to run 6 containers at 100MB each caused complete plan destabilizatio
 ### Visualizations (Container Deploy)
 
 ![CPU and Memory Timeline](assets/charts/container-deploy/cpu-memory-timeline.png)
-*Figure 7: CPU and Memory trends for containerized applications.*
+*Figure 8: CPU and Memory trends for containerized applications.*
 
 ![Kernel Reclaim Activity](assets/charts/container-deploy/kernel-reclaim-timeline.png)
-*Figure 8: Reclaim activity in the container environment.*
+*Figure 9: Reclaim activity in the container environment.*
 
 ![Swap Activity](assets/charts/container-deploy/swap-activity-timeline.png)
-*Figure 9: Swap activity during container experiments.*
+*Figure 10: Swap activity during container experiments.*
 
 ![Burst Latency Distribution](assets/charts/container-deploy/burst-latency-distribution.png)
-*Figure 10: High latency variance observed during container traffic bursts.*
+*Figure 11: High latency variance observed during container traffic bursts.*
+
+![Traffic Volume vs CPU](assets/charts/container-deploy/traffic-cpu-timeline.png)
+*Figure 12: Steady-state traffic volume (RPM) vs CPU% for containerized deployment. Traffic remained consistently low while CPU fluctuated with memory pressure phases.*
 
 ---
 
