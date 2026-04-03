@@ -89,8 +89,8 @@ Deployed 2 Node.js applications (50MB RSS each). Verified that the `/diag/proc` 
 ![Burst Latency Distribution](assets/charts/zip-deploy/burst-latency-distribution.png)
 *Figure 6: Burst traffic latency histogram.*
 
-![Traffic Volume vs CPU](assets/charts/zip-deploy/traffic-cpu-timeline.png)
-*Figure 7: Steady-state traffic volume (RPM) overlaid with CPU%. Traffic remained flat at ~6 RPM (1 req/10s × 6 apps) throughout all phases, while CPU rose from 15% to 35%+ during memory pressure — confirming the CPU increase was not driven by traffic.*
+![Traffic Volume vs CPU vs Memory](assets/charts/zip-deploy/traffic-cpu-timeline.png)
+*Figure 7: Memory pressure experiment — ZIP deploy. Request rate remained essentially flat (~6 RPM) throughout all phases, while memory utilization climbed from ~80% to ~92% and CPU increased from ~15% to 35%+ in tandem — confirming the CPU rise was driven by memory pressure, not traffic.*
 
 ---
 
@@ -147,8 +147,8 @@ An attempt to run 6 containers at 100MB each caused complete plan destabilizatio
 ![Burst Latency Distribution](assets/charts/container-deploy/burst-latency-distribution.png)
 *Figure 11: High latency variance observed during container traffic bursts.*
 
-![Traffic Volume vs CPU](assets/charts/container-deploy/traffic-cpu-timeline.png)
-*Figure 12: Steady-state traffic volume (RPM) vs CPU% for containerized deployment. Traffic remained consistently low while CPU fluctuated with memory pressure phases.*
+![Traffic Volume vs CPU vs Memory](assets/charts/container-deploy/traffic-cpu-timeline.png)
+*Figure 12: Memory pressure experiment — container deploy. Request rate remained consistently low (~12 RPM) while memory held steady at ~80% and CPU fluctuated between 10-51% during pressure phases. Note: metric cadence is sparser than ZIP deploy (~2 min intervals).*
 
 ---
 

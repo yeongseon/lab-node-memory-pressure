@@ -659,14 +659,16 @@ async function generateTrafficCpuTimeline(inputDir, outputDir) {
   }
 
   const cpuByMinute = new Map();
+  const memByMinute = new Map();
   for (const row of metricsRows) {
-    if (row.resource_type !== 'plan' || row.metric !== 'CpuPercentage') continue;
+    if (row.resource_type !== 'plan') continue;
     const minute = String(row.snap_ts || '').slice(0, 16);
     if (!minute) continue;
-    cpuByMinute.set(minute, toNumber(row.value));
+    if (row.metric === 'CpuPercentage') cpuByMinute.set(minute, toNumber(row.value));
+    if (row.metric === 'MemoryPercentage') memByMinute.set(minute, toNumber(row.value));
   }
 
-  const minuteKeys = [...new Set([...rpmByMinute.keys(), ...cpuByMinute.keys()])].sort();
+  const minuteKeys = [...new Set([...rpmByMinute.keys(), ...cpuByMinute.keys(), ...memByMinute.keys()])].sort();
   if (!minuteKeys.length) {
     console.warn('[charts] warn no traffic/cpu timeline points found');
     return null;
@@ -674,7 +676,15 @@ async function generateTrafficCpuTimeline(inputDir, outputDir) {
 
   const rpmValues = minuteKeys.map((minute) => rpmByMinute.get(minute) || 0);
   const cpuValues = minuteKeys.map((minute) => cpuByMinute.get(minute) ?? null);
+  const memValues = minuteKeys.map((minute) => memByMinute.get(minute) ?? null);
   const labels = minuteKeys.map(timeOnly);
+
+  const lowerInputDir = String(inputDir).toLowerCase();
+  const title = lowerInputDir.includes('zip-deploy')
+    ? 'ZIP Deploy — Traffic RPM vs CPU% vs Memory%'
+    : lowerInputDir.includes('container-deploy')
+      ? 'Container Deploy — Traffic RPM vs CPU% vs Memory%'
+      : 'Traffic RPM vs CPU% vs Memory%';
 
   const chartJSNodeCanvas = new ChartJSNodeCanvas({ width: 1200, height: 600, backgroundColour: 'white' });
   const config = {
@@ -683,55 +693,85 @@ async function generateTrafficCpuTimeline(inputDir, outputDir) {
       labels,
       datasets: [
         {
-          type: 'line',
           label: 'Requests / min',
           data: rpmValues,
-          borderColor: PALETTE.teal,
-          backgroundColor: 'rgba(26, 188, 156, 0.15)',
+          borderColor: '#2563eb',
+          backgroundColor: 'rgba(37,99,235,0.08)',
           borderWidth: 2,
-          tension: 0.2,
+          borderDash: [6, 3],
+          tension: 0,
           pointRadius: 0,
-          fill: true,
+          fill: 'origin',
           yAxisID: 'yRpm',
-          order: 2,
+          order: 3,
         },
         {
-          type: 'line',
           label: 'CPU %',
           data: cpuValues,
-          borderColor: PALETTE.red,
-          backgroundColor: PALETTE.red,
+          borderColor: '#f59e0b',
+          backgroundColor: '#f59e0b',
           borderWidth: 2,
-          tension: 0.2,
-          pointRadius: 2,
-          yAxisID: 'yCpu',
+          tension: 0,
+          pointRadius: 2.5,
+          yAxisID: 'yPct',
           order: 1,
+          spanGaps: true,
+        },
+        {
+          label: 'Memory %',
+          data: memValues,
+          borderColor: '#dc2626',
+          backgroundColor: '#dc2626',
+          borderWidth: 2,
+          tension: 0,
+          pointRadius: 2.5,
+          yAxisID: 'yPct',
+          order: 2,
           spanGaps: true,
         },
       ],
     },
     options: {
-      ...chartBaseOptions('Traffic Volume (RPM) vs CPU% — Steady State'),
+      ...chartBaseOptions(title),
+      responsive: false,
+      animation: false,
+      elements: {
+        line: { borderWidth: 2, tension: 0 },
+      },
       scales: {
         x: {
-          ...chartBaseOptions('').scales.x,
+          ...chartBaseOptions(title).scales.x,
+          type: 'category',
           ticks: {
-            ...chartBaseOptions('').scales.x.ticks,
+            ...chartBaseOptions(title).scales.x.ticks,
             maxTicksLimit: 20,
+            maxRotation: 45,
           },
         },
         yRpm: {
           type: 'linear',
           position: 'left',
-          beginAtZero: true,
+          min: 0,
+          suggestedMax: 30,
+          ticks: {
+            stepSize: 5,
+            color: '#2563eb',
+            font: { family: 'sans-serif', size: 11 },
+          },
           title: { display: true, text: 'Requests / min' },
           grid: { color: 'rgba(127, 140, 141, 0.2)' },
         },
-        yCpu: {
+        yPct: {
           type: 'linear',
           position: 'right',
           min: 0,
-          title: { display: true, text: 'CPU %' },
+          max: 100,
+          ticks: {
+            stepSize: 10,
+            callback: (v) => `${v}%`,
+            font: { family: 'sans-serif', size: 11 },
+          },
+          title: { display: true, text: 'CPU % / Memory %' },
           grid: { drawOnChartArea: false },
         },
       },
