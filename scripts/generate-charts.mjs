@@ -731,7 +731,6 @@ async function generateTrafficCpuTimeline(inputDir, outputDir) {
           type: 'linear',
           position: 'right',
           min: 0,
-          max: 100,
           title: { display: true, text: 'CPU %' },
           grid: { drawOnChartArea: false },
         },
