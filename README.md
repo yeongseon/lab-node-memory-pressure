@@ -1,5 +1,9 @@
 # lab-node-memory-pressure
 
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://yeongseon.github.io/lab-node-memory-pressure/)
+
+> **Documentation Site**: [https://yeongseon.github.io/lab-node-memory-pressure/](https://yeongseon.github.io/lab-node-memory-pressure/)
+
 Experiment to validate (or disprove) the hypothesis that **memory pressure on an Azure App Service Plan (B1 Linux) causes CPU increases independent of application traffic** due to Linux kernel page reclaim activity.
 
 ## Hypothesis
