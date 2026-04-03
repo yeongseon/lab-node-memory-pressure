@@ -11,16 +11,16 @@
       
       
       
-        <link rel="prev" href="../background/">
+        <link rel="prev" href="..">
       
       
-        <link rel="next" href="../experiment-log/">
+        <link rel="next" href="../hypothesis/">
       
       
         
           <link rel="alternate" href="./" hreflang="en">
         
-          <link rel="alternate" href="../ko/hypothesis/" hreflang="ko">
+          <link rel="alternate" href="../ko/background/" hreflang="ko">
         
       
       
@@ -29,7 +29,7 @@
     
     
       
-        <title>Hypothesis - Node.js Memory Pressure Lab</title>
+        <title>Background - Node.js Memory Pressure Lab</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#hypothesis-kernel-page-reclaim-under-memory-pressure-causes-cpu-increase" class="md-skip">
+        <a href="#background-linux-memory-management-and-page-reclaim" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Hypothesis
+              Background
             
           </span>
         </div>
@@ -169,7 +169,7 @@
           </li>
         
           <li class="md-select__item">
-            <a href="../ko/hypothesis/" hreflang="ko" class="md-select__link">
+            <a href="../ko/background/" hreflang="ko" class="md-select__link">
               한국어
             </a>
           </li>
@@ -314,33 +314,6 @@
       
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../background/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Background
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
     
   
   
@@ -360,7 +333,7 @@
   <span class="md-ellipsis">
     
   
-    Hypothesis
+    Background
   
 
     
@@ -378,7 +351,7 @@
   <span class="md-ellipsis">
     
   
-    Hypothesis
+    Background
   
 
     
@@ -404,10 +377,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#customer-scenario" class="md-nav__link">
+  <a href="#memory-watermarks-min-low-high" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Customer Scenario
+        Memory Watermarks (min, low, high)
       
     </span>
   </a>
@@ -415,10 +388,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#causal-chain-hypothesis" class="md-nav__link">
+  <a href="#kswapd-the-background-page-reclaim-daemon" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Causal Chain (Hypothesis)
+        kswapd — The Background Page Reclaim Daemon
       
     </span>
   </a>
@@ -426,22 +399,66 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-we-need-to-prove-or-disprove" class="md-nav__link">
+  <a href="#direct-reclaim-synchronous-blocking" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What We Need to Prove or Disprove
+        Direct Reclaim — Synchronous, Blocking
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="What We Need to Prove or Disprove">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#swap-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Swap Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#psi-pressure-stall-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PSI — Pressure Stall Information
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-page-reclaim-costs-cpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Page Reclaim Costs CPU
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-proc-files-used-in-this-experiment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key /proc Files Used in This Experiment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key /proc Files Used in This Experiment">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#proof-criteria-all-must-be-met" class="md-nav__link">
+  <a href="#procmeminfo" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Proof criteria (ALL must be met):
+        /proc/meminfo
       
     </span>
   </a>
@@ -449,10 +466,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#disproof-criteria-any-sufficient" class="md-nav__link">
+  <a href="#procvmstat" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Disproof criteria (ANY sufficient):
+        /proc/vmstat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#procpressurememory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        /proc/pressure/memory
       
     </span>
   </a>
@@ -465,60 +493,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#variables" class="md-nav__link">
+  <a href="#azure-app-service-context" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Variables
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Variables">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#independent-variables-what-we-control" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Independent Variables (what we control):
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#dependent-variables-what-we-measure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Dependent Variables (what we measure):
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#controlled-variables-held-constant" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Controlled Variables (held constant):
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#experiment-matrix" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Experiment Matrix
+        Azure App Service Context
       
     </span>
   </a>
@@ -526,21 +504,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#risk-register" class="md-nav__link">
+  <a href="#references" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Risk Register
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#key-metric-relationship" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Key Metric Relationship
+        References
       
     </span>
   </a>
@@ -551,6 +518,33 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hypothesis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hypothesis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -629,208 +623,231 @@
   
 
 
-<h1 id="hypothesis-kernel-page-reclaim-under-memory-pressure-causes-cpu-increase">Hypothesis: Kernel Page Reclaim Under Memory Pressure Causes CPU Increase<a class="headerlink" href="#hypothesis-kernel-page-reclaim-under-memory-pressure-causes-cpu-increase" title="Permanent link">&para;</a></h1>
-<h2 id="customer-scenario">Customer Scenario<a class="headerlink" href="#customer-scenario" title="Permanent link">&para;</a></h2>
-<p>An Azure App Service Plan (B1, Linux) hosts many Node.js applications. Over time,
-worker-level memory usage accumulates to approximately 90%. The customer observes
-unexpected CPU spikes even though application traffic load has not increased.</p>
-<p><strong>Source metric</strong>: Azure Portal → Diagnose and solve problems → Instance Memory Usage
-(App Service Plan) shows <code>PercentPhysicalMemoryUsed</code> at ~90% across all worker instances.</p>
-<h2 id="causal-chain-hypothesis">Causal Chain (Hypothesis)<a class="headerlink" href="#causal-chain-hypothesis" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>1. Multiple Node.js apps share the same App Service Plan worker(s)
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>       ↓
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>2. Each app consumes memory over time (caches, buffers, V8 heap growth)
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>       ↓
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>3. Worker-level physical memory usage climbs toward ~90%
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>       ↓
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>4. Free memory decreases; OS buffer/cache shrinks
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>       ↓
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>5. Swap space (if available) gets progressively consumed
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>       ↓
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>6. Linux kernel activates page reclaim mechanisms:
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>   - kswapd (background page scanner)
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>   - direct reclaim (synchronous, blocks allocation)
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>   - page writeback (dirty pages flushed to disk)
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>       ↓
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>7. Page reclaim consumes CPU cycles independently of application workload
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>       ↓
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>8. CpuPercentage rises even though request throughput is flat or low
+<h1 id="background-linux-memory-management-and-page-reclaim">Background: Linux Memory Management and Page Reclaim<a class="headerlink" href="#background-linux-memory-management-and-page-reclaim" title="Permanent link">&para;</a></h1>
+<p>This experiment investigates whether Linux kernel page reclaim activity causes CPU increases on Azure App Service. Specifically, we focus on the B1 Linux tier, which provides 1 vCPU and 1.75 GB of RAM. In such a resource-constrained environment, the overhead of managing memory when it runs low can significantly impact application performance.</p>
+<p>Understanding kernel memory management is vital for diagnosing unexpected CPU spikes. Often, a "high CPU" alert is a symptom of the kernel struggling to find free memory pages rather than the application code itself being inefficient. This page covers the mechanisms the kernel uses to reclaim memory and how those operations consume CPU cycles.</p>
+<p>When physical memory runs low, the Linux kernel must decide which pages to keep in RAM and which to evict. This process, known as page reclaim, involves several distinct stages depending on the severity of the memory pressure.</p>
+<h2 id="memory-watermarks-min-low-high">Memory Watermarks (min, low, high)<a class="headerlink" href="#memory-watermarks-min-low-high" title="Permanent link">&para;</a></h2>
+<p>The Linux kernel maintains three watermark levels for each memory zone to manage free page inventory. These thresholds determine when the kernel starts and stops reclaiming memory.</p>
+<ul>
+<li><strong>min</strong>: The emergency reserve. Only the kernel can allocate memory below this level. If free memory reaches this point, the system is in critical condition.</li>
+<li><strong>low</strong>: The threshold where the background reclaim daemon (kswapd) wakes up and begins freeing pages.</li>
+<li><strong>high</strong>: The target level. Once free memory rises above this, kswapd goes back to sleep, satisfied that there are enough free pages.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Free Pages
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    ↑
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    │  ██████ high watermark  ── kswapd sleeps
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    │
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    │  ██████ low watermark   ── kswapd wakes, background reclaim starts
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    │
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    │  ██████ min watermark   ── direct reclaim triggers, allocations may block
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    │
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    0
 </code></pre></div>
-<h2 id="what-we-need-to-prove-or-disprove">What We Need to Prove or Disprove<a class="headerlink" href="#what-we-need-to-prove-or-disprove" title="Permanent link">&para;</a></h2>
-<h3 id="proof-criteria-all-must-be-met">Proof criteria (ALL must be met):<a class="headerlink" href="#proof-criteria-all-must-be-met" title="Permanent link">&para;</a></h3>
+<p>The following diagram illustrates the escalation of memory pressure and the corresponding kernel responses:</p>
+<pre class="mermaid"><code>flowchart TD
+    A[Free memory is abundant] --&gt; B{Free pages drop}
+    B --&gt;|Below HIGH| A
+    B --&gt;|Below LOW| C[kswapd wakes up]
+    C --&gt; D[Background reclaim: scan LRU lists]
+    D --&gt; E{Free pages recovered?}
+    E --&gt;|Above HIGH| F[kswapd sleeps]
+    E --&gt;|Still below LOW| D
+    E --&gt;|Below MIN| G[Direct reclaim triggered]
+    G --&gt; H[Allocating thread blocked]
+    H --&gt; I[Application stalls]
+
+    style A fill:#4caf50,color:#fff
+    style C fill:#ff9800,color:#fff
+    style G fill:#f44336,color:#fff
+    style I fill:#b71c1c,color:#fff</code></pre>
+<p>These watermarks are influenced by kernel variables such as <code>watermark_boost_factor</code>, <code>watermark_scale_factor</code>, and <code>min_free_kbytes</code>, defined in <code>mm/page_alloc.c</code>.</p>
+<p>Reference: <a href="https://github.com/torvalds/linux/blob/v6.0/mm/page_alloc.c">mm/page_alloc.c</a></p>
+<h2 id="kswapd-the-background-page-reclaim-daemon">kswapd — The Background Page Reclaim Daemon<a class="headerlink" href="#kswapd-the-background-page-reclaim-daemon" title="Permanent link">&para;</a></h2>
+<p>kswapd is a per-NUMA-node kernel thread responsible for maintaining a pool of free pages without blocking application threads.</p>
+<p>When free pages drop below the <strong>low</strong> watermark, kswapd wakes up. It scans Least Recently Used (LRU) lists, which track active and inactive pages for both anonymous memory (heap/stack) and file-backed memory (page cache). It evicts pages until free memory exceeds the <strong>high</strong> watermark.</p>
+<p>The CPU impact of kswapd comes from the cycles spent scanning these lists. If pages must be swapped out to disk, kswapd also manages the resulting I/O wait. You can monitor its activity using counters like <code>pgscan_kswapd</code> and <code>pgsteal_kswapd</code> in <code>/proc/vmstat</code>.</p>
+<p>Source: <a href="https://github.com/torvalds/linux/blob/v6.0/mm/vmscan.c">mm/vmscan.c</a></p>
+<h2 id="direct-reclaim-synchronous-blocking">Direct Reclaim — Synchronous, Blocking<a class="headerlink" href="#direct-reclaim-synchronous-blocking" title="Permanent link">&para;</a></h2>
+<p>Direct reclaim occurs when an allocation request cannot be satisfied immediately, and kswapd cannot keep up with the demand. Unlike kswapd, which runs in the background, direct reclaim is synchronous.</p>
+<p>When free memory falls below the <strong>min</strong> watermark, the process requesting memory is forced to perform the reclaim work itself. This <strong>blocks the allocating thread</strong>, causing the application to stall while it waits for the kernel to find or create free pages.</p>
+<p>In <code>/proc/vmstat</code>, this is tracked by <code>pgscan_direct</code> and <code>pgsteal_direct</code>. The <code>allocstall</code> counter is particularly important, as it increments every time a process is stalled waiting for direct reclaim.</p>
+<h2 id="swap-mechanics">Swap Mechanics<a class="headerlink" href="#swap-mechanics" title="Permanent link">&para;</a></h2>
+<p>Swap is disk-backed storage used for anonymous pages (such as application heap data allocated via malloc) that the kernel evicts from RAM.</p>
+<p>The following diagram illustrates how the kernel decides to reclaim different types of pages:</p>
+<pre class="mermaid"><code>flowchart LR
+    A[Page to reclaim] --&gt; B{Page type?}
+    B --&gt;|File-backed| C{Clean or dirty?}
+    C --&gt;|Clean| D[Drop from RAM]
+    C --&gt;|Dirty| E[Write back to disk, then drop]
+    B --&gt;|Anonymous| F{Swap available?}
+    F --&gt;|Yes| G[Write to swap space]
+    F --&gt;|No| H[Cannot reclaim - OOM risk]
+
+    style D fill:#4caf50,color:#fff
+    style E fill:#ff9800,color:#fff
+    style G fill:#ff9800,color:#fff
+    style H fill:#f44336,color:#fff</code></pre>
+<ul>
+<li><strong>File-backed pages</strong>: These include mmap'd files and the page cache. Clean pages can be evicted by simply dropping them from RAM. Dirty pages must be written back to disk before eviction.</li>
+<li><strong>Anonymous pages</strong>: These have no backing file on disk. To free the RAM they occupy, the kernel must write them to swap space.</li>
+</ul>
+<p>The cost of swap I/O is high. Managing the I/O path consumes CPU, and the latency of disk operations can cause significant application delays. On Azure App Service B1, swap is typically available (around 512 MB) but resides on ephemeral storage, which has limited performance.</p>
+<p>Key counters in <code>/proc/vmstat</code> include <code>pswpin</code> (pages read from swap) and <code>pswpout</code> (pages written to swap).</p>
+<p>Source: <a href="https://github.com/torvalds/linux/blob/v6.0/mm/vmstat.c">mm/vmstat.c</a></p>
+<h2 id="psi-pressure-stall-information">PSI — Pressure Stall Information<a class="headerlink" href="#psi-pressure-stall-information" title="Permanent link">&para;</a></h2>
+<p>Pressure Stall Information (PSI) is a kernel feature introduced in version 4.20 that provides a canonical way to measure resource pressure. It quantifies how much time tasks spend waiting for memory, CPU, or I/O.</p>
+<p>The file <code>/proc/pressure/memory</code> provides three metrics:</p>
+<ul>
+<li><strong>some</strong>: The percentage of time that at least one task was stalled on memory.</li>
+<li><strong>full</strong>: The percentage of time that all non-idle tasks were stalled on memory simultaneously.</li>
+<li><strong>avg10, avg60, avg300</strong>: 10, 60, and 300-second moving averages for these stalls.</li>
+<li><strong>total</strong>: The cumulative stall time in microseconds.</li>
+</ul>
+<p>PSI is the most direct measure of how memory pressure affects workload throughput. It distinguishes between the kernel doing background work and the application being actively hindered by lack of memory.</p>
+<p>Reference: <a href="https://developers.redhat.com/articles/2026/03/18/prepare-enable-linux-pressure-stall-information-red-hat-openshift">Red Hat PSI Documentation</a></p>
+<h2 id="why-page-reclaim-costs-cpu">Why Page Reclaim Costs CPU<a class="headerlink" href="#why-page-reclaim-costs-cpu" title="Permanent link">&para;</a></h2>
+<p>Page reclaim is not a "free" operation. It consumes CPU through several mechanisms:</p>
 <ol>
-<li><strong>Memory sustained at ≥88%</strong> for 30+ minutes on the worker/plan metric</li>
-<li><strong>Traffic is flat</strong>: request rate within ±10% of baseline, no bursts during observation</li>
-<li><strong>CPU rises materially</strong>: CpuPercentage ≥2x baseline OR +10 percentage points sustained for 15+ minutes</li>
-<li><strong>Reclaim activity visible</strong>: sustained increase in at least 2 of:</li>
-<li><code>pgscan_kswapd</code> (pages scanned by kswapd)</li>
-<li><code>pgscan_direct</code> (pages scanned by direct reclaim)</li>
-<li><code>pgsteal_kswapd</code> (pages reclaimed by kswapd)</li>
-<li><code>pgsteal_direct</code> (pages reclaimed by direct reclaim)</li>
-<li><code>allocstall</code> (allocation stalls due to reclaim)</li>
-<li>PSI memory pressure (<code>/proc/pressure/memory</code>)</li>
-<li><strong>Swap-specific proof</strong> (only if SwapTotal &gt; 0):</li>
-<li>SwapFree decreases over time</li>
-<li>pswpin/pswpout counters increase during CPU rise</li>
+<li><strong>LRU scanning</strong>: The kernel must walk through long lists of pages to identify which ones are suitable for eviction.</li>
+<li><strong>Page table updates</strong>: When a page is evicted, the kernel must unmap it from the process page tables, which may require TLB shootdowns on SMP systems.</li>
+<li><strong>Writeback</strong>: Flushing dirty pages to disk before they can be freed consumes CPU for I/O management.</li>
+<li><strong>Swap I/O management</strong>: Coordinating the transfer of anonymous pages to and from the swap device.</li>
+<li><strong>Lock contention</strong>: During scanning and eviction, the kernel must acquire zone and LRU locks. If multiple threads are requesting memory, they may fight for these locks.</li>
 </ol>
-<h3 id="disproof-criteria-any-sufficient">Disproof criteria (ANY sufficient):<a class="headerlink" href="#disproof-criteria-any-sufficient" title="Permanent link">&para;</a></h3>
-<ul>
-<li>High memory is sustained with flat traffic, but CPU and reclaim counters stay near baseline across repeated runs</li>
-<li>CPU rises, but reclaim counters show no activity (CPU increase from another cause)</li>
-<li>SwapTotal = 0 AND no reclaim counters rise (no kernel memory pressure mechanism active)</li>
-</ul>
-<h2 id="variables">Variables<a class="headerlink" href="#variables" title="Permanent link">&para;</a></h2>
-<h3 id="independent-variables-what-we-control">Independent Variables (what we control):<a class="headerlink" href="#independent-variables-what-we-control" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Number of apps on the plan (2 → 4 → 6 → 8)</li>
-<li>Memory allocation per app (ALLOC_MB: 50 → 100 → 150 → 200)</li>
-<li>Deployment mode (ZIP deploy vs Web App for Containers)</li>
-<li>Traffic rate (fixed light: 1 req/10s/app)</li>
-</ul>
-<h3 id="dependent-variables-what-we-measure">Dependent Variables (what we measure):<a class="headerlink" href="#dependent-variables-what-we-measure" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Plan CpuPercentage (Azure Monitor, 1-min granularity)</li>
-<li>Plan MemoryPercentage (Azure Monitor, 1-min granularity)</li>
-<li>PercentPhysicalMemoryUsed (Diagnostics blade, if accessible)</li>
-<li>/proc/meminfo: MemTotal, MemFree, MemAvailable, SwapTotal, SwapFree, Cached, Dirty, SReclaimable</li>
-<li>/proc/vmstat: pswpin, pswpout, pgscan_kswapd, pgscan_direct, pgsteal_kswapd, pgsteal_direct, pgfault, pgmajfault, allocstall</li>
-<li>/proc/pressure/memory: PSI metrics (some avg10, avg60, avg300, total)</li>
-<li>App-level: process.memoryUsage() (rss, heapUsed, external, arrayBuffers)</li>
-<li>App-level: requestCount, cpuUsage</li>
-</ul>
-<h3 id="controlled-variables-held-constant">Controlled Variables (held constant):<a class="headerlink" href="#controlled-variables-held-constant" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Plan SKU: B1 (1 vCPU, 1.75 GB RAM)</li>
-<li>Region: koreacentral</li>
-<li>Node.js version: 20-lts</li>
-<li>Traffic pattern: 1 request per 10 seconds per app (steady-traffic.mjs)</li>
-<li>App code: identical across all apps (only ALLOC_MB and APP_NAME differ)</li>
-</ul>
-<h2 id="experiment-matrix">Experiment Matrix<a class="headerlink" href="#experiment-matrix" title="Permanent link">&para;</a></h2>
+<p>The following diagram illustrates the competition for CPU resources on a single-core system during memory reclaim:</p>
+<pre class="mermaid"><code>flowchart LR
+    subgraph Single vCPU
+        direction TB
+        APP[Application Code]
+        LRU[LRU Scanning]
+        PT[Page Table Updates]
+        WB[Writeback I/O]
+        SWAP[Swap I/O]
+        LOCK[Lock Contention]
+    end
+
+    CPU[1 CPU Core] --&gt; Single vCPU
+
+    APP -.-&gt;|competes with| LRU
+    APP -.-&gt;|competes with| PT
+    APP -.-&gt;|competes with| WB
+    APP -.-&gt;|competes with| SWAP
+
+    style APP fill:#2196f3,color:#fff
+    style LRU fill:#f44336,color:#fff
+    style PT fill:#f44336,color:#fff
+    style WB fill:#f44336,color:#fff
+    style SWAP fill:#f44336,color:#fff
+    style LOCK fill:#f44336,color:#fff</code></pre>
+<p>On a single-vCPU system like the B1 tier, all these kernel operations compete directly with your application for the same CPU core. This makes the performance impact of memory pressure much more visible than it would be on a multi-core system.</p>
+<h2 id="key-proc-files-used-in-this-experiment">Key /proc Files Used in This Experiment<a class="headerlink" href="#key-proc-files-used-in-this-experiment" title="Permanent link">&para;</a></h2>
+<p>These files provide the raw data used to correlate memory pressure with CPU usage.</p>
+<h3 id="procmeminfo">/proc/meminfo<a class="headerlink" href="#procmeminfo" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
-<th>Phase</th>
-<th>Deploy Mode</th>
-<th>Apps</th>
-<th>ALLOC_MB</th>
-<th>Target Memory%</th>
-<th>Traffic</th>
-<th>Duration</th>
-<th>Purpose</th>
+<th>Field</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>0</td>
-<td>ZIP</td>
-<td>2</td>
-<td>50</td>
-<td>~40%</td>
-<td>None→Light</td>
-<td>15 min</td>
-<td>Discovery: verify swap, metrics pipeline</td>
+<td>MemTotal</td>
+<td>Total usable RAM</td>
 </tr>
 <tr>
-<td>1</td>
-<td>ZIP</td>
-<td>2</td>
-<td>50</td>
-<td>~50-60%</td>
-<td>Light</td>
-<td>30-60 min</td>
-<td>Baseline: CPU/memory/swap under low pressure</td>
+<td>MemFree</td>
+<td>Completely free pages</td>
 </tr>
 <tr>
-<td>2a</td>
-<td>ZIP</td>
-<td>4</td>
-<td>100</td>
-<td>~80-85%</td>
-<td>Light</td>
-<td>60 min</td>
-<td>Approach plateau</td>
+<td>MemAvailable</td>
+<td>Estimated memory available for new allocations without swapping</td>
 </tr>
 <tr>
-<td>2b</td>
-<td>ZIP</td>
-<td>6</td>
-<td>100</td>
-<td>~88-92%</td>
-<td>Light</td>
-<td>60-120 min</td>
-<td><strong>Core test</strong>: high memory, flat traffic → CPU?</td>
+<td>Cached</td>
+<td>Page cache size</td>
 </tr>
 <tr>
-<td>3</td>
-<td>ZIP</td>
-<td>(same as 2b)</td>
-<td>(same)</td>
-<td>~88-92%</td>
-<td>Burst 60s</td>
-<td>10 min</td>
-<td>Traffic burst at high memory</td>
+<td>SwapTotal</td>
+<td>Total swap space</td>
 </tr>
 <tr>
-<td>4</td>
-<td>Container</td>
-<td>(repeat phases 0-3)</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td>Compare deployment modes</td>
+<td>SwapFree</td>
+<td>Unused swap space</td>
+</tr>
+<tr>
+<td>Dirty</td>
+<td>Pages waiting to be written back to disk</td>
+</tr>
+<tr>
+<td>SReclaimable</td>
+<td>Slab objects that can be reclaimed</td>
 </tr>
 </tbody>
 </table>
-<h2 id="risk-register">Risk Register<a class="headerlink" href="#risk-register" title="Permanent link">&para;</a></h2>
+<h3 id="procvmstat">/proc/vmstat<a class="headerlink" href="#procvmstat" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
-<th>Risk</th>
-<th>Impact</th>
-<th>Mitigation</th>
+<th>Counter</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>SwapTotal = 0 on B1</td>
-<td>Cannot prove swap-specific chain</td>
-<td>Revise to "reclaim-driven CPU" hypothesis</td>
+<td>pswpin</td>
+<td>Pages swapped in from disk</td>
 </tr>
 <tr>
-<td>/proc is container-scoped</td>
-<td>Counters don't reflect host</td>
-<td>Use plan-level Azure Monitor + cgroup stats as primary</td>
+<td>pswpout</td>
+<td>Pages swapped out to disk</td>
 </tr>
 <tr>
-<td>MemoryPercentage doesn't reflect containers</td>
-<td>Can't reach 90% target</td>
-<td>Use ZIP deploy as primary evidence</td>
+<td>pgscan_kswapd</td>
+<td>Pages scanned by kswapd</td>
 </tr>
 <tr>
-<td>Platform noise masks signal</td>
-<td>Ambiguous results</td>
-<td>Repeat 3x per configuration</td>
+<td>pgscan_direct</td>
+<td>Pages scanned by direct reclaim</td>
 </tr>
 <tr>
-<td>B1 single vCPU</td>
-<td>Reclaim competes directly with app</td>
-<td>Actually supports hypothesis — single CPU makes it MORE visible</td>
+<td>pgsteal_kswapd</td>
+<td>Pages successfully reclaimed by kswapd</td>
+</tr>
+<tr>
+<td>pgsteal_direct</td>
+<td>Pages successfully reclaimed by direct reclaim</td>
+</tr>
+<tr>
+<td>allocstall</td>
+<td>Number of direct reclaim stalls</td>
+</tr>
+<tr>
+<td>pgfault</td>
+<td>Page faults (minor)</td>
+</tr>
+<tr>
+<td>pgmajfault</td>
+<td>Major page faults (required disk I/O)</td>
 </tr>
 </tbody>
 </table>
-<h2 id="key-metric-relationship">Key Metric Relationship<a class="headerlink" href="#key-metric-relationship" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>If hypothesis is TRUE, we expect this correlation:
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>MemoryUsed ↑ → SwapFree ↓ → pgscan_kswapd ↑ → CpuPercentage ↑
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>                              (while request_rate stays flat)
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>If hypothesis is FALSE:
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>MemoryUsed ↑ → SwapFree ↓ → pgscan_kswapd flat → CpuPercentage flat
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>                              (kernel handles pressure without CPU cost)
-</code></pre></div>
+<h3 id="procpressurememory">/proc/pressure/memory<a class="headerlink" href="#procpressurememory" title="Permanent link">&para;</a></h3>
+<p>This file shows the percentage of time tasks were stalled. For example:
+<code>some avg10=0.00 avg60=0.00 avg300=0.00 total=0</code>
+<code>full avg10=0.00 avg60=0.00 avg300=0.00 total=0</code></p>
+<h2 id="azure-app-service-context">Azure App Service Context<a class="headerlink" href="#azure-app-service-context" title="Permanent link">&para;</a></h2>
+<p>The B1 SKU is a constrained environment with 1 vCPU and 1.75 GB of RAM. The Linux worker runs as a guest OS on Hyper-V. Multiple Node.js applications often share the same App Service Plan, meaning they compete for these limited resources.</p>
+<p>When viewing <code>/proc</code> files within an app container, it's important to know that while many values are visible, some might reflect the container's cgroup limits rather than the host's total physical memory. Azure's platform-level MemoryPercentage metric includes all processes on the worker, including platform daemons and all hosted apps.</p>
+<p>Swap is available on B1 Linux, usually around 512 MB on ephemeral disk. While this provides a safety net, the performance of ephemeral storage means that heavy swapping will lead to significant CPU overhead and application latency.</p>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://github.com/torvalds/linux/blob/v6.0/mm/vmscan.c">Linux kernel v6.0 source — mm/vmscan.c (page reclaim)</a></li>
+<li><a href="https://github.com/torvalds/linux/blob/v6.0/mm/vmstat.c">Linux kernel v6.0 source — mm/vmstat.c (VM counters)</a></li>
+<li><a href="https://github.com/torvalds/linux/blob/v6.0/mm/page_alloc.c">Linux kernel v6.0 source — mm/page_alloc.c (watermarks)</a></li>
+<li><a href="https://developers.redhat.com/articles/2026/03/18/prepare-enable-linux-pressure-stall-information-red-hat-openshift">Red Hat — Pressure Stall Information</a></li>
+</ul>
 
 
 

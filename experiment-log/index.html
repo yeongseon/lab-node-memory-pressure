@@ -317,6 +317,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../background/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Background
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../hypothesis/" class="md-nav__link">
         
   
@@ -609,6 +636,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#why-is-baseline-memory-already-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Is Baseline Memory Already High?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#comparison-zip-vs-container" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -636,6 +674,17 @@
     <span class="md-ellipsis">
       
         Hypothesis Status: PARTIALLY SUPPORTED
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
       
     </span>
   </a>
@@ -884,7 +933,23 @@
 <p><img alt="Burst Latency Distribution" src="../assets/charts/container-deploy/burst-latency-distribution.png" />
 <em>Figure 10: High latency variance observed during container traffic bursts.</em></p>
 <hr />
+<h2 id="why-is-baseline-memory-already-high">Why Is Baseline Memory Already High?<a class="headerlink" href="#why-is-baseline-memory-already-high" title="Permanent link">&para;</a></h2>
+<p>Before interpreting the results, it is important to understand why memory utilization starts at 79-80% even with only 2 apps allocating 50MB each.</p>
+<p>The B1 SKU provides ~1,855 MB of physical RAM (as seen via <code>/proc/meminfo</code> MemTotal). However, a significant portion is consumed before any user application starts:</p>
+<ul>
+<li><strong>Platform / host runtime overhead</strong>: The App Service Linux sandbox, Kudu (SCM) sidecar, and container runtime processes consume a baseline amount of memory.</li>
+<li><strong>Language runtime footprint</strong>: Each Node.js 20 process has a base RSS of ~30-40 MB before any user-allocated memory, due to V8 heap initialization, libuv, and loaded modules.</li>
+<li><strong>Linux page cache</strong>: The kernel uses available memory for file-system caching (<code>Cached</code> in <code>/proc/meminfo</code>). This is reclaimable under pressure, but it is counted toward the Azure Monitor <code>MemoryPercentage</code> metric.</li>
+<li><strong>MemoryPercentage ≠ app RSS sum</strong>: Azure Monitor reports plan-level physical memory usage, which includes all of the above. The sum of app-level RSS values from <code>process.memoryUsage()</code> will always be significantly less than what the platform reports.</li>
+</ul>
+<p>This is visible in the <strong>Memory Breakdown</strong> chart (Figure 4) and the <strong>App RSS</strong> chart (Figure 5), which show that app RSS accounts for only a fraction of total memory usage. The gap is platform overhead and cached pages.</p>
+<hr />
 <h2 id="comparison-zip-vs-container">Comparison: ZIP vs. Container<a class="headerlink" href="#comparison-zip-vs-container" title="Permanent link">&para;</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Scope of Comparison</p>
+<p>The following comparison reflects behavior observed <strong>under this specific B1 Linux lab setup</strong>. Results may differ on higher SKUs, different runtimes, or production workloads with different memory profiles.</p>
+</div>
+<p>Under this B1 Linux lab setup, ZIP deployment tolerated a denser memory-pressure experiment than container deployment. This should not be generalized to all deployment scenarios.</p>
 <table>
 <thead>
 <tr>
@@ -939,18 +1004,26 @@
 <hr />
 <h2 id="final-verdict-and-recommendations">Final Verdict and Recommendations<a class="headerlink" href="#final-verdict-and-recommendations" title="Permanent link">&para;</a></h2>
 <h3 id="hypothesis-status-partially-supported">Hypothesis Status: PARTIALLY SUPPORTED<a class="headerlink" href="#hypothesis-status-partially-supported" title="Permanent link">&para;</a></h3>
-<p>The experiment confirms that memory pressure drives CPU increases via kernel reclaim activity, though the behavior differs by deployment type:</p>
+<p>This lab strongly supports the claim that aggregate memory pressure on low-tier Linux App Service Plans can drive non-application CPU consumption through kernel reclaim and swap activity. In this specific setup, the effect on steady-state request latency was limited for ZIP deployment, while container deployment tended to destabilize earlier rather than degrade gradually.</p>
 <ul>
 <li><strong>ZIP Deploy</strong>: The hypothesis is strongly supported. CPU usage increased by 1.75x (from 20% to 35% avg) purely due to kernel activity. The near-total exhaustion of swap triggered massive increases in <code>pgscan_direct</code> (+14,200%) and <code>pswpin</code> (+1,500%), correlating directly with CPU spikes.</li>
 <li><strong>Container Deploy</strong>: The primary risk is destabilization rather than gradual CPU creep. The container runtime introduces enough overhead that a B1 plan fails to reach the same level of sustained memory pressure before applications crash. However, request latency is significantly worse (10x) for containers under pressure compared to ZIP.</li>
 </ul>
+<h3 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h3>
+<p>This experiment successfully demonstrates the CPU/reclaim mechanism, but has limitations regarding proof of user-visible service degradation:</p>
+<ol>
+<li><strong>Latency impact was limited for ZIP</strong>: Despite a 1.75x CPU increase, burst latency remained low (avg 16.8ms, p99 62ms). The CPU overhead was real but did not cause measurable request degradation in this test.</li>
+<li><strong>Short observation windows</strong>: Phase 2b ran for 60 minutes (ZIP) and 28 minutes (container). Longer steady-state observation (hours to days) may reveal cumulative effects not captured here.</li>
+<li><strong>Synthetic workload</strong>: The test app serves simple HTTP responses. Real applications with heavier computation, database queries, or file I/O may be more sensitive to CPU contention from kernel reclaim.</li>
+<li><strong>Single burst test</strong>: Phase 3 tested one 60-second burst at 10 RPS. A more thorough evaluation would include varied request patterns, lower timeout margins, and separation of warm-path vs cold-path responses.</li>
+</ol>
+<p>To make a stronger claim about user-visible degradation, future experiments should include longer observation periods, more realistic workloads, and fine-grained latency percentile tracking over extended time.</p>
 <h3 id="customer-recommendations">Customer Recommendations<a class="headerlink" href="#customer-recommendations" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>Maintain Memory Buffer</strong>: Keep <code>MemoryPercentage</code> below 80% on B1 Linux plans. Crossing this threshold triggers aggressive kernel reclaim and swap I/O, which steals CPU cycles from your application.</li>
 <li><strong>Monitor Reclaim Counters</strong>: If CPU spikes occur without a corresponding increase in traffic, check for <code>pgscan_kswapd</code> and <code>pgscan_direct</code> activity. These are leading indicators of memory-driven performance degradation.</li>
 <li><strong>Container Limitations</strong>: Avoid hosting more than 2-3 containers on a single B1 plan if they have non-trivial memory requirements. The startup overhead and runtime isolation lead to earlier OOM events and higher latency variance.</li>
 <li><strong>Scaling Strategy</strong>: If your application consistently operates above 80% memory, scale up to the B2 or B3 SKU. The additional RAM will reduce reliance on the 2GB swap partition and stabilize CPU performance.</li>
-<li><strong>ZIP vs. Container</strong>: For maximum density on small SKUs like B1, ZIP deployment is more efficient. Containers provide better isolation but consume significantly more resources, leading to plan-wide failures when over-provisioned.</li>
 </ol>
 <hr />
 <h2 id="data-summary">Data Summary<a class="headerlink" href="#data-summary" title="Permanent link">&para;</a></h2>

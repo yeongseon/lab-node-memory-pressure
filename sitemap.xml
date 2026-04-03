@@ -8,6 +8,13 @@
         <xhtml:link rel="alternate" hreflang="ko" href="Noneko/"/>
     </url>
     <url>
+        <loc>Nonebackground/</loc>
+        <lastmod>2026-04-03</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonebackground/"/>
+        <xhtml:link rel="alternate" hreflang="ko" href="Noneko/background/"/>
+    </url>
+    <url>
         <loc>Noneexperiment-log/</loc>
         <lastmod>2026-04-03</lastmod>
         <changefreq>daily</changefreq>
@@ -34,6 +41,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="ko" href="Noneko/"/>
         <xhtml:link rel="alternate" hreflang="en" href="None"/>
+    </url>
+    <url>
+        <loc>Noneko/background/</loc>
+        <lastmod>2026-04-03</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ko" href="Noneko/background/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="Nonebackground/"/>
     </url>
     <url>
         <loc>Noneko/experiment-log/</loc>
