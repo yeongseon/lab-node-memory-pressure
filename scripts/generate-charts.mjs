@@ -678,17 +678,20 @@ async function generateTrafficCpuTimeline(inputDir, outputDir) {
 
   const chartJSNodeCanvas = new ChartJSNodeCanvas({ width: 1200, height: 600, backgroundColour: 'white' });
   const config = {
-    type: 'bar',
+    type: 'line',
     data: {
       labels,
       datasets: [
         {
-          type: 'bar',
+          type: 'line',
           label: 'Requests / min',
           data: rpmValues,
-          backgroundColor: 'rgba(26, 188, 156, 0.6)',
           borderColor: PALETTE.teal,
-          borderWidth: 1,
+          backgroundColor: 'rgba(26, 188, 156, 0.15)',
+          borderWidth: 2,
+          tension: 0.2,
+          pointRadius: 0,
+          fill: true,
           yAxisID: 'yRpm',
           order: 2,
         },
