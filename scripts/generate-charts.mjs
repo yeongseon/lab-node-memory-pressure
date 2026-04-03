@@ -264,33 +264,74 @@ async function generateCpuMemoryTimeline(inputDir, outputDir) {
   const cpu = tsKeys.map((l) => byTs.get(l).cpu);
   const memory = tsKeys.map((l) => byTs.get(l).memory);
 
-  await renderPng({
-    outputFile: path.join(outputDir, 'cpu-memory-timeline.png'),
-    width: 1200,
-    height: 600,
-    labels,
-    title: 'App Service Plan — CPU% vs Memory% Over Time',
-    datasets: [
-      makeLineDataset('CPU %', cpu, PALETTE.red, 'yCpu'),
-      makeLineDataset('Memory %', memory, PALETTE.blue, 'yMem'),
-    ],
-    scales: {
-      x: chartBaseOptions('').scales.x,
-      yCpu: {
-        type: 'linear',
-        position: 'left',
-        title: { display: true, text: 'CPU %' },
-        grid: { color: 'rgba(127, 140, 141, 0.2)' },
+  const chartJSNodeCanvas = new ChartJSNodeCanvas({ width: 1200, height: 600, backgroundColour: 'white' });
+  const config = {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'CPU %',
+          data: cpu,
+          borderColor: '#f59e0b',
+          backgroundColor: '#f59e0b',
+          borderWidth: 2,
+          tension: 0,
+          pointRadius: 2,
+          yAxisID: 'yPct',
+          order: 1,
+          spanGaps: true,
+        },
+        {
+          label: 'Memory %',
+          data: memory,
+          borderColor: '#dc2626',
+          backgroundColor: '#dc2626',
+          borderWidth: 2,
+          tension: 0,
+          pointRadius: 2,
+          yAxisID: 'yPct',
+          order: 2,
+          spanGaps: true,
+        },
+      ],
+    },
+    options: {
+      ...chartBaseOptions('App Service Plan — CPU% vs Memory% Over Time'),
+      responsive: false,
+      animation: false,
+      elements: {
+        line: { borderWidth: 2, tension: 0 },
       },
-      yMem: {
-        type: 'linear',
-        position: 'right',
-        title: { display: true, text: 'Memory %' },
-        grid: { drawOnChartArea: false },
+      scales: {
+        x: {
+          ...chartBaseOptions('').scales.x,
+          type: 'category',
+          ticks: {
+            ...chartBaseOptions('').scales.x.ticks,
+            maxTicksLimit: 20,
+            maxRotation: 45,
+          },
+        },
+        yPct: {
+          type: 'linear',
+          position: 'left',
+          min: 0,
+          max: 100,
+          ticks: {
+            stepSize: 10,
+            callback: (v) => `${v}%`,
+            font: { family: 'sans-serif', size: 11 },
+          },
+          title: { display: true, text: 'CPU % / Memory %' },
+          grid: { color: 'rgba(127, 140, 141, 0.2)' },
+        },
       },
     },
-  });
+  };
 
+  const buffer = await chartJSNodeCanvas.renderToBuffer(config, 'image/png');
+  await fs.writeFile(path.join(outputDir, 'cpu-memory-timeline.png'), buffer);
   return 'cpu-memory-timeline.png';
 }
 
