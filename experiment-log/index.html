@@ -882,6 +882,8 @@
 <em>Figure 5: Per-app memory footprint over time.</em></p>
 <p><img alt="Burst Latency Distribution" src="../assets/charts/zip-deploy/burst-latency-distribution.png" />
 <em>Figure 6: Burst traffic latency histogram.</em></p>
+<p><img alt="Traffic Volume vs CPU" src="../assets/charts/zip-deploy/traffic-cpu-timeline.png" />
+<em>Figure 7: Steady-state traffic volume (RPM) overlaid with CPU%. Traffic remained flat at ~6 RPM (1 req/10s × 6 apps) throughout all phases, while CPU rose from 15% to 35%+ during memory pressure — confirming the CPU increase was not driven by traffic.</em></p>
 <hr />
 <h2 id="container-deploy-experiment">Container Deploy Experiment<a class="headerlink" href="#container-deploy-experiment" title="Permanent link">&para;</a></h2>
 <p>The second experiment evaluated the same scenarios using Docker containers.</p>
@@ -925,13 +927,15 @@
 </ul>
 <h3 id="visualizations-container-deploy">Visualizations (Container Deploy)<a class="headerlink" href="#visualizations-container-deploy" title="Permanent link">&para;</a></h3>
 <p><img alt="CPU and Memory Timeline" src="../assets/charts/container-deploy/cpu-memory-timeline.png" />
-<em>Figure 7: CPU and Memory trends for containerized applications.</em></p>
+<em>Figure 8: CPU and Memory trends for containerized applications.</em></p>
 <p><img alt="Kernel Reclaim Activity" src="../assets/charts/container-deploy/kernel-reclaim-timeline.png" />
-<em>Figure 8: Reclaim activity in the container environment.</em></p>
+<em>Figure 9: Reclaim activity in the container environment.</em></p>
 <p><img alt="Swap Activity" src="../assets/charts/container-deploy/swap-activity-timeline.png" />
-<em>Figure 9: Swap activity during container experiments.</em></p>
+<em>Figure 10: Swap activity during container experiments.</em></p>
 <p><img alt="Burst Latency Distribution" src="../assets/charts/container-deploy/burst-latency-distribution.png" />
-<em>Figure 10: High latency variance observed during container traffic bursts.</em></p>
+<em>Figure 11: High latency variance observed during container traffic bursts.</em></p>
+<p><img alt="Traffic Volume vs CPU" src="../assets/charts/container-deploy/traffic-cpu-timeline.png" />
+<em>Figure 12: Steady-state traffic volume (RPM) vs CPU% for containerized deployment. Traffic remained consistently low while CPU fluctuated with memory pressure phases.</em></p>
 <hr />
 <h2 id="why-is-baseline-memory-already-high">Why Is Baseline Memory Already High?<a class="headerlink" href="#why-is-baseline-memory-already-high" title="Permanent link">&para;</a></h2>
 <p>Before interpreting the results, it is important to understand why memory utilization starts at 79-80% even with only 2 apps allocating 50MB each.</p>
