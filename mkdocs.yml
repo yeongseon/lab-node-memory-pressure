@@ -5,6 +5,7 @@ repo_name: "yeongseon/lab-node-memory-pressure"
 
 theme:
   name: material
+  language: en
   palette:
     - scheme: default
       primary: indigo
@@ -24,6 +25,24 @@ theme:
     - navigation.top
     - content.code.copy
     - toc.integrate
+
+plugins:
+  - search
+  - i18n:
+      docs_structure: suffix
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: ko
+          name: 한국어
+          build: true
+          nav:
+            - 홈: index.md
+            - 가설: hypothesis.md
+            - 실험 결과: experiment-log.md
+            - 실행 가이드: runbook.md
 
 markdown_extensions:
   - tables

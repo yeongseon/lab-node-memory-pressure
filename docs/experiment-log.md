@@ -8,8 +8,7 @@ This document provides a comprehensive scientific record of memory pressure expe
 When an Azure B1 Linux App Service Plan hosts multiple Node.js applications that push aggregate memory utilization toward 90%, the Linux kernel's page reclaim mechanisms (kswapd, direct reclaim, and swap I/O) cause CPU usage to increase significantly, independent of application traffic levels.
 
 ### Environment Details
-- **Start Date**: 2026-04-02
-- **End Date**: 2026-04-03
+- **Experiment Period**: ~18 hours (overnight run)
 - **Subscription ID**: ***REDACTED***
 - **Resource Group**: rg-node-memory-lab
 - **Region**: Korea Central
