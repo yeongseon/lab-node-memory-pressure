@@ -72,25 +72,32 @@ Deployed 2 Node.js applications (50MB RSS each). Verified that the `/diag/proc` 
 ### Visualizations (ZIP Deploy)
 
 ![CPU and Memory Timeline](assets/charts/zip-deploy/cpu-memory-timeline.png)
-*Figure 1: App Service Plan CPU% (orange) and Memory% (red) on a shared 0-100% scale. Both metrics rise together as apps are scaled up, with CPU climbing from ~15% to 47% while memory reaches 92%.*
+*Figure 1: CPU% vs Memory% Over Time*
+*App Service Plan CPU% (orange) and Memory% (red) on a shared 0-100% scale. Both metrics rise together as apps are scaled up, with CPU climbing from ~15% to 47% while memory reaches 92%.*
 
 ![Kernel Reclaim Activity](assets/charts/zip-deploy/kernel-reclaim-timeline.png)
-*Figure 2: Linux kernel page reclaim counters (Δ per interval). Sharp escalation of pgscan_kswapd and pgscan_direct confirms the kernel was actively reclaiming pages under memory pressure.*
+*Figure 2: Kernel Page Reclaim Activity*
+*Linux kernel page reclaim counters (Δ per interval). Sharp escalation of pgscan_kswapd and pgscan_direct confirms the kernel was actively reclaiming pages under memory pressure.*
 
 ![Swap Activity](assets/charts/zip-deploy/swap-activity-timeline.png)
-*Figure 3: Swap I/O activity (Δ per interval). Intense pswpin/pswpout spikes correlate with high memory phases, confirming swap thrashing as the kernel moves pages between RAM and disk.*
+*Figure 3: Swap I/O Activity*
+*Intense pswpin/pswpout spikes correlate with high memory phases, confirming swap thrashing as the kernel moves pages between RAM and disk.*
 
 ![Memory Breakdown](assets/charts/zip-deploy/memory-breakdown-timeline.png)
-*Figure 4: OS-level memory breakdown from /proc/meminfo. Shows MemFree, MemAvailable, Cached, and SwapFree declining as app memory allocation increases.*
+*Figure 4: OS Memory Breakdown*
+*OS-level memory breakdown from /proc/meminfo. Shows MemFree, MemAvailable, Cached, and SwapFree declining as app memory allocation increases.*
 
 ![App RSS](assets/charts/zip-deploy/app-rss-timeline.png)
-*Figure 5: Per-app resident set size (RSS) in MB. Each app's memory footprint grows as ALLOC_MB is increased across phases.*
+*Figure 5: Per-App RSS Memory*
+*Per-app resident set size (RSS) in MB. Each app's memory footprint grows as ALLOC_MB is increased across phases.*
 
 ![Burst Latency Distribution](assets/charts/zip-deploy/burst-latency-distribution.png)
-*Figure 6: Latency histogram during Phase 3 traffic burst (10 RPS × 60s). Shows request latency distribution under memory pressure.*
+*Figure 6: Burst Traffic Latency Distribution*
+*Latency histogram during Phase 3 traffic burst (10 RPS × 60s). Shows request latency distribution under memory pressure.*
 
 ![Traffic Volume vs CPU vs Memory](assets/charts/zip-deploy/traffic-cpu-timeline.png)
-*Figure 7: Memory pressure experiment — ZIP deploy. Request rate remained essentially flat (~6 RPM) throughout all phases, while memory utilization climbed from ~80% to ~92% and CPU increased from ~15% to 35%+ in tandem — confirming the CPU rise was driven by memory pressure, not traffic.*
+*Figure 7: Traffic RPM vs CPU% vs Memory%*
+*Request rate remained essentially flat (~6 RPM) throughout all phases, while memory utilization climbed from ~80% to ~92% and CPU increased from ~15% to 35%+ in tandem — confirming the CPU rise was driven by memory pressure, not traffic.*
 
 ---
 
@@ -136,19 +143,24 @@ An attempt to run 6 containers at 100MB each caused complete plan destabilizatio
 ### Visualizations (Container Deploy)
 
 ![CPU and Memory Timeline](assets/charts/container-deploy/cpu-memory-timeline.png)
-*Figure 8: App Service Plan CPU% (orange) and Memory% (red) for container deploy on a shared 0-100% scale. Memory remains ~75-82% while CPU spikes to 84% during container scaling events (Phase 2a), then stabilizes at 10-24%.*
+*Figure 8: CPU% vs Memory% Over Time*
+*App Service Plan CPU% (orange) and Memory% (red) on a shared 0-100% scale. Memory remains ~75-82% while CPU spikes to 84% during container scaling events (Phase 2a), then stabilizes at 10-24%.*
 
 ![Kernel Reclaim Activity](assets/charts/container-deploy/kernel-reclaim-timeline.png)
-*Figure 9: Kernel page reclaim activity in the container environment. pgscan_kswapd and pgscan_direct counters show moderate reclaim compared to ZIP deploy.*
+*Figure 9: Kernel Page Reclaim Activity*
+*Kernel page reclaim counters in the container environment. pgscan_kswapd and pgscan_direct show moderate reclaim compared to ZIP deploy.*
 
 ![Swap Activity](assets/charts/container-deploy/swap-activity-timeline.png)
-*Figure 10: Swap I/O during container experiment. Lower intensity than ZIP deploy due to container isolation limiting swap utilization to ~49%.*
+*Figure 10: Swap I/O Activity*
+*Swap I/O during container experiment. Lower intensity than ZIP deploy due to container isolation limiting swap utilization to ~49%.*
 
 ![Burst Latency Distribution](assets/charts/container-deploy/burst-latency-distribution.png)
-*Figure 11: Latency histogram during container Phase 3 burst. Higher variance (avg 174ms vs 17ms for ZIP) shows containers are more sensitive to memory pressure.*
+*Figure 11: Burst Traffic Latency Distribution*
+*Latency histogram during container Phase 3 burst. Higher variance (avg 174ms vs 17ms for ZIP) shows containers are more sensitive to memory pressure.*
 
 ![Traffic Volume vs CPU vs Memory](assets/charts/container-deploy/traffic-cpu-timeline.png)
-*Figure 12: Memory pressure experiment — container deploy. Request rate remained consistently low (~12 RPM) while memory held steady at ~80% and CPU fluctuated between 10-51% during pressure phases. Note: metric cadence is sparser than ZIP deploy (~2 min intervals).*
+*Figure 12: Traffic RPM vs CPU% vs Memory%*
+*Request rate remained consistently low (~12 RPM) while memory held steady at ~80% and CPU fluctuated between 10-51% during pressure phases. Note: metric cadence is sparser than ZIP deploy (~2 min intervals).*
 
 ---
 
