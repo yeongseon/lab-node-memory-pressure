@@ -717,7 +717,7 @@
 </ol>
 <p>The following diagram illustrates the competition for CPU resources on a single-core system during memory reclaim:</p>
 <pre class="mermaid"><code>flowchart LR
-    subgraph Single vCPU
+    subgraph SingleVCPU["Single vCPU"]
         direction TB
         APP[Application Code]
         LRU[LRU Scanning]
@@ -727,7 +727,7 @@
         LOCK[Lock Contention]
     end
 
-    CPU[1 CPU Core] --&gt; Single vCPU
+    CPU[1 CPU Core] --&gt; SingleVCPU
 
     APP -.-&gt;|competes with| LRU
     APP -.-&gt;|competes with| PT

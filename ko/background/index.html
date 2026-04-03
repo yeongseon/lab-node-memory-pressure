@@ -717,7 +717,7 @@
 </ol>
 <p>다음 다이어그램은 단일 vCPU 환경에서 다양한 커널 작업이 애플리케이션과 어떻게 CPU를 경쟁하는지 보여줍니다.</p>
 <pre class="mermaid"><code>flowchart LR
-    subgraph "단일 vCPU"
+    subgraph SingleVCPU["단일 vCPU"]
         direction TB
         APP["애플리케이션 코드"]
         LRU["LRU 스캔"]
@@ -727,7 +727,7 @@
         LOCK["락 경합"]
     end
 
-    CPU["1 CPU 코어"] --&gt; 단일 vCPU
+    CPU["1 CPU 코어"] --&gt; SingleVCPU
 
     APP -.-&gt;|"경쟁"| LRU
     APP -.-&gt;|"경쟁"| PT
