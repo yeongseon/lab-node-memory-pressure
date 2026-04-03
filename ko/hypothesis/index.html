@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="ko" class="no-js">
   <head>
     
       <meta charset="utf-8">
@@ -11,32 +11,32 @@
       
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../">
       
       
         <link rel="next" href="../experiment-log/">
       
       
         
-          <link rel="alternate" href="./" hreflang="en">
+          <link rel="alternate" href="../../hypothesis/" hreflang="en">
         
-          <link rel="alternate" href="../ko/hypothesis/" hreflang="ko">
+          <link rel="alternate" href="./" hreflang="ko">
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
     
     
       
-        <title>Hypothesis - Node.js Memory Pressure Lab</title>
+        <title>가설 - Node.js Memory Pressure Lab</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,7 +55,7 @@
       
     
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -80,8 +80,8 @@
     <div data-md-component="skip">
       
         
-        <a href="#hypothesis-kernel-page-reclaim-under-memory-pressure-causes-cpu-increase" class="md-skip">
-          Skip to content
+        <a href="#cpu" class="md-skip">
+          콘텐츠로 이동
         </a>
       
     </div>
@@ -95,8 +95,8 @@
   
 
 <header class="md-header md-header--shadow" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Node.js Memory Pressure Lab" class="md-header__button md-logo" aria-label="Node.js Memory Pressure Lab" data-md-component="logo">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="../" title="Node.js Memory Pressure Lab" class="md-header__button md-logo" aria-label="Node.js Memory Pressure Lab" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Hypothesis
+              가설
             
           </span>
         </div>
@@ -156,20 +156,20 @@
       <div class="md-header__option">
   <div class="md-select">
     
-    <button class="md-header__button md-icon" aria-label="Select language">
+    <button class="md-header__button md-icon" aria-label="언어설정">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
     </button>
     <div class="md-select__inner">
       <ul class="md-select__list">
         
           <li class="md-select__item">
-            <a href="./" hreflang="en" class="md-select__link">
+            <a href="../../hypothesis/" hreflang="en" class="md-select__link">
               English
             </a>
           </li>
         
           <li class="md-select__item">
-            <a href="../ko/hypothesis/" hreflang="ko" class="md-select__link">
+            <a href="./" hreflang="ko" class="md-select__link">
               한국어
             </a>
           </li>
@@ -190,16 +190,16 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
-      <nav class="md-search__options" aria-label="Search">
+      <nav class="md-search__options" aria-label="검색">
         
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
@@ -210,7 +210,7 @@
       <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
-            Initializing search
+            검색 초기화
           </div>
           <ol class="md-search-result__list" role="presentation"></ol>
         </div>
@@ -222,7 +222,7 @@
     
     
       <div class="md-header__source">
-        <a href="https://github.com/yeongseon/lab-node-memory-pressure" title="Go to repository" class="md-source" data-md-component="source">
+        <a href="https://github.com/yeongseon/lab-node-memory-pressure" title="저장소로 이동" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
@@ -258,9 +258,9 @@
 
   
 
-<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="네비게이션" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Node.js Memory Pressure Lab" class="md-nav__button md-logo" aria-label="Node.js Memory Pressure Lab" data-md-component="logo">
+    <a href="../" title="Node.js Memory Pressure Lab" class="md-nav__button md-logo" aria-label="Node.js Memory Pressure Lab" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -270,7 +270,7 @@
   </label>
   
     <div class="md-nav__source">
-      <a href="https://github.com/yeongseon/lab-node-memory-pressure" title="Go to repository" class="md-source" data-md-component="source">
+      <a href="https://github.com/yeongseon/lab-node-memory-pressure" title="저장소로 이동" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
@@ -290,14 +290,14 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Home
+    홈
   
 
     
@@ -333,7 +333,7 @@
   <span class="md-ellipsis">
     
   
-    Hypothesis
+    가설
   
 
     
@@ -351,7 +351,7 @@
   <span class="md-ellipsis">
     
   
-    Hypothesis
+    가설
   
 
     
@@ -363,7 +363,7 @@
       
         
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+<nav class="md-nav md-nav--secondary" aria-label="목차">
   
   
   
@@ -372,15 +372,15 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      목차
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#customer-scenario" class="md-nav__link">
+  <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Customer Scenario
+        고객 시나리오
       
     </span>
   </a>
@@ -388,10 +388,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#causal-chain-hypothesis" class="md-nav__link">
+  <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Causal Chain (Hypothesis)
+        인과 관계 체인 (가설)
       
     </span>
   </a>
@@ -399,22 +399,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-we-need-to-prove-or-disprove" class="md-nav__link">
+  <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What We Need to Prove or Disprove
+        증명 또는 반증이 필요한 사항
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="What We Need to Prove or Disprove">
+    <nav class="md-nav" aria-label="증명 또는 반증이 필요한 사항">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#proof-criteria-all-must-be-met" class="md-nav__link">
+  <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Proof criteria (ALL must be met):
+        증명 기준 (모두 충족해야 함):
       
     </span>
   </a>
@@ -422,10 +422,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#disproof-criteria-any-sufficient" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Disproof criteria (ANY sufficient):
+        반증 기준 (하나라도 해당되면 충분):
       
     </span>
   </a>
@@ -438,22 +438,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#variables" class="md-nav__link">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Variables
+        변수
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Variables">
+    <nav class="md-nav" aria-label="변수">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#independent-variables-what-we-control" class="md-nav__link">
+  <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Independent Variables (what we control):
+        독립 변수 (제어하는 요소):
       
     </span>
   </a>
@@ -461,10 +461,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#dependent-variables-what-we-measure" class="md-nav__link">
+  <a href="#_8" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Dependent Variables (what we measure):
+        종속 변수 (측정하는 요소):
       
     </span>
   </a>
@@ -472,10 +472,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#controlled-variables-held-constant" class="md-nav__link">
+  <a href="#_9" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Controlled Variables (held constant):
+        통제 변수 (일정하게 유지하는 요소):
       
     </span>
   </a>
@@ -488,10 +488,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#experiment-matrix" class="md-nav__link">
+  <a href="#_10" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Experiment Matrix
+        실험 매트릭스
       
     </span>
   </a>
@@ -499,10 +499,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#risk-register" class="md-nav__link">
+  <a href="#_11" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Risk Register
+        리스크 레지스터
       
     </span>
   </a>
@@ -510,10 +510,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#key-metric-relationship" class="md-nav__link">
+  <a href="#_12" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Metric Relationship
+        주요 메트릭 관계
       
     </span>
   </a>
@@ -542,7 +542,7 @@
   <span class="md-ellipsis">
     
   
-    Experiment Results
+    실험 결과
   
 
     
@@ -569,7 +569,7 @@
   <span class="md-ellipsis">
     
   
-    Runbook
+    실행 가이드
   
 
     
@@ -602,95 +602,92 @@
   
 
 
-<h1 id="hypothesis-kernel-page-reclaim-under-memory-pressure-causes-cpu-increase">Hypothesis: Kernel Page Reclaim Under Memory Pressure Causes CPU Increase<a class="headerlink" href="#hypothesis-kernel-page-reclaim-under-memory-pressure-causes-cpu-increase" title="Permanent link">&para;</a></h1>
-<h2 id="customer-scenario">Customer Scenario<a class="headerlink" href="#customer-scenario" title="Permanent link">&para;</a></h2>
-<p>An Azure App Service Plan (B1, Linux) hosts many Node.js applications. Over time,
-worker-level memory usage accumulates to approximately 90%. The customer observes
-unexpected CPU spikes even though application traffic load has not increased.</p>
-<p><strong>Source metric</strong>: Azure Portal → Diagnose and solve problems → Instance Memory Usage
-(App Service Plan) shows <code>PercentPhysicalMemoryUsed</code> at ~90% across all worker instances.</p>
-<h2 id="causal-chain-hypothesis">Causal Chain (Hypothesis)<a class="headerlink" href="#causal-chain-hypothesis" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>1. Multiple Node.js apps share the same App Service Plan worker(s)
+<h1 id="cpu">가설: 메모리 압박 상황에서의 커널 페이지 회수가 CPU 증가를 유발함<a class="headerlink" href="#cpu" title="Permanent link">&para;</a></h1>
+<h2 id="_1">고객 시나리오<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>Azure App Service Plan (B1, Linux)에서 여러 Node.js 애플리케이션을 호스팅하고 있습니다. 시간이 지나면서 워커 레벨의 메모리 사용량이 약 90%까지 누적됩니다. 고객은 애플리케이션 트래픽 부하가 증가하지 않았음에도 불구하고 예상치 못한 CPU 스파이크를 관찰합니다.</p>
+<p><strong>소스 메트릭</strong>: Azure Portal → 문제 해결 및 진단 → Instance Memory Usage (App Service Plan)에서 모든 워커 인스턴스의 <code>PercentPhysicalMemoryUsed</code>가 약 90%로 표시됩니다.</p>
+<h2 id="_2">인과 관계 체인 (가설)<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>1. 여러 Node.js 앱이 동일한 App Service Plan 워커를 공유함
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>       ↓
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>2. Each app consumes memory over time (caches, buffers, V8 heap growth)
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>2. 각 앱이 시간이 지남에 따라 메모리를 소비함 (캐시, 버퍼, V8 힙 성장)
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>       ↓
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>3. Worker-level physical memory usage climbs toward ~90%
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>3. 워커 레벨의 물리 메모리 사용량이 약 90%에 도달함
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>       ↓
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>4. Free memory decreases; OS buffer/cache shrinks
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>4. 여유 메모리가 감소하고 OS 버퍼/캐시가 축소됨
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>       ↓
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>5. Swap space (if available) gets progressively consumed
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>5. Swap 공간(사용 가능한 경우)이 점진적으로 소비됨
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>       ↓
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>6. Linux kernel activates page reclaim mechanisms:
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>   - kswapd (background page scanner)
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>   - direct reclaim (synchronous, blocks allocation)
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>   - page writeback (dirty pages flushed to disk)
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>6. Linux 커널이 페이지 회수(page reclaim) 메커니즘을 활성화함:
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>   - kswapd (백그라운드 페이지 스캐너)
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>   - direct reclaim (동기식, 할당 차단)
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>   - page writeback (더티 페이지를 디스크로 플러시)
 <a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>       ↓
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>7. Page reclaim consumes CPU cycles independently of application workload
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>7. 페이지 회수가 애플리케이션 워크로드와 무관하게 CPU 사이클을 소비함
 <a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>       ↓
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>8. CpuPercentage rises even though request throughput is flat or low
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>8. 요청 처리량은 일정하거나 낮음에도 불구하고 CpuPercentage가 상승함
 </code></pre></div>
-<h2 id="what-we-need-to-prove-or-disprove">What We Need to Prove or Disprove<a class="headerlink" href="#what-we-need-to-prove-or-disprove" title="Permanent link">&para;</a></h2>
-<h3 id="proof-criteria-all-must-be-met">Proof criteria (ALL must be met):<a class="headerlink" href="#proof-criteria-all-must-be-met" title="Permanent link">&para;</a></h3>
+<h2 id="_3">증명 또는 반증이 필요한 사항<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="_4">증명 기준 (모두 충족해야 함):<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
 <ol>
-<li><strong>Memory sustained at ≥88%</strong> for 30+ minutes on the worker/plan metric</li>
-<li><strong>Traffic is flat</strong>: request rate within ±10% of baseline, no bursts during observation</li>
-<li><strong>CPU rises materially</strong>: CpuPercentage ≥2x baseline OR +10 percentage points sustained for 15+ minutes</li>
-<li><strong>Reclaim activity visible</strong>: sustained increase in at least 2 of:</li>
-<li><code>pgscan_kswapd</code> (pages scanned by kswapd)</li>
-<li><code>pgscan_direct</code> (pages scanned by direct reclaim)</li>
-<li><code>pgsteal_kswapd</code> (pages reclaimed by kswapd)</li>
-<li><code>pgsteal_direct</code> (pages reclaimed by direct reclaim)</li>
-<li><code>allocstall</code> (allocation stalls due to reclaim)</li>
-<li>PSI memory pressure (<code>/proc/pressure/memory</code>)</li>
-<li><strong>Swap-specific proof</strong> (only if SwapTotal &gt; 0):</li>
-<li>SwapFree decreases over time</li>
-<li>pswpin/pswpout counters increase during CPU rise</li>
+<li><strong>메모리가 88% 이상 유지</strong>: 워커/플랜 메트릭에서 30분 이상 지속</li>
+<li><strong>트래픽이 일정함</strong>: 요청률이 기준치 대비 ±10% 이내이며, 관찰 기간 동안 버스트가 없음</li>
+<li><strong>CPU가 실질적으로 상승</strong>: CpuPercentage가 기준치의 2배 이상 또는 10%포인트 이상 상승하여 15분 이상 유지</li>
+<li><strong>회수 활동 확인</strong>: 다음 중 최소 2개 이상의 메트릭이 지속적으로 증가:</li>
+<li><code>pgscan_kswapd</code> (kswapd에 의해 스캔된 페이지)</li>
+<li><code>pgscan_direct</code> (direct reclaim에 의해 스캔된 페이지)</li>
+<li><code>pgsteal_kswapd</code> (kswapd에 의해 회수된 페이지)</li>
+<li><code>pgsteal_direct</code> (direct reclaim에 의해 회수된 페이지)</li>
+<li><code>allocstall</code> (회수로 인한 할당 지연)</li>
+<li>PSI 메모리 압박 (<code>/proc/pressure/memory</code>)</li>
+<li><strong>Swap 관련 증명</strong> (SwapTotal &gt; 0인 경우에만 해당):</li>
+<li>시간이 지남에 따라 SwapFree 감소</li>
+<li>CPU 상승 중 pswpin/pswpout 카운터 증가</li>
 </ol>
-<h3 id="disproof-criteria-any-sufficient">Disproof criteria (ANY sufficient):<a class="headerlink" href="#disproof-criteria-any-sufficient" title="Permanent link">&para;</a></h3>
+<h3 id="_5">반증 기준 (하나라도 해당되면 충분):<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
 <ul>
-<li>High memory is sustained with flat traffic, but CPU and reclaim counters stay near baseline across repeated runs</li>
-<li>CPU rises, but reclaim counters show no activity (CPU increase from another cause)</li>
-<li>SwapTotal = 0 AND no reclaim counters rise (no kernel memory pressure mechanism active)</li>
+<li>트래픽이 일정한 상태에서 높은 메모리가 유지되지만, 반복된 실행 과정에서 CPU 및 회수 카운터가 기준치 근처에 머무는 경우</li>
+<li>CPU는 상승하지만 회수 카운터에 활동이 없는 경우 (다른 원인으로 인한 CPU 증가)</li>
+<li>SwapTotal = 0 이며 회수 카운터가 상승하지 않는 경우 (커널 메모리 압박 메커니즘이 작동하지 않음)</li>
 </ul>
-<h2 id="variables">Variables<a class="headerlink" href="#variables" title="Permanent link">&para;</a></h2>
-<h3 id="independent-variables-what-we-control">Independent Variables (what we control):<a class="headerlink" href="#independent-variables-what-we-control" title="Permanent link">&para;</a></h3>
+<h2 id="_6">변수<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<h3 id="_7">독립 변수 (제어하는 요소):<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Number of apps on the plan (2 → 4 → 6 → 8)</li>
-<li>Memory allocation per app (ALLOC_MB: 50 → 100 → 150 → 200)</li>
-<li>Deployment mode (ZIP deploy vs Web App for Containers)</li>
-<li>Traffic rate (fixed light: 1 req/10s/app)</li>
+<li>플랜 내 앱 개수 (2 → 4 → 6 → 8)</li>
+<li>앱당 메모리 할당량 (ALLOC_MB: 50 → 100 → 150 → 200)</li>
+<li>배포 모드 (ZIP 배포 vs Web App for Containers)</li>
+<li>트래픽률 (고정된 가벼운 부하: 앱당 10초당 1개 요청)</li>
 </ul>
-<h3 id="dependent-variables-what-we-measure">Dependent Variables (what we measure):<a class="headerlink" href="#dependent-variables-what-we-measure" title="Permanent link">&para;</a></h3>
+<h3 id="_8">종속 변수 (측정하는 요소):<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Plan CpuPercentage (Azure Monitor, 1-min granularity)</li>
-<li>Plan MemoryPercentage (Azure Monitor, 1-min granularity)</li>
-<li>PercentPhysicalMemoryUsed (Diagnostics blade, if accessible)</li>
+<li>플랜 CpuPercentage (Azure Monitor, 1분 단위)</li>
+<li>플랜 MemoryPercentage (Azure Monitor, 1분 단위)</li>
+<li>PercentPhysicalMemoryUsed (접근 가능한 경우 진단 블레이드 활용)</li>
 <li>/proc/meminfo: MemTotal, MemFree, MemAvailable, SwapTotal, SwapFree, Cached, Dirty, SReclaimable</li>
 <li>/proc/vmstat: pswpin, pswpout, pgscan_kswapd, pgscan_direct, pgsteal_kswapd, pgsteal_direct, pgfault, pgmajfault, allocstall</li>
-<li>/proc/pressure/memory: PSI metrics (some avg10, avg60, avg300, total)</li>
-<li>App-level: process.memoryUsage() (rss, heapUsed, external, arrayBuffers)</li>
-<li>App-level: requestCount, cpuUsage</li>
+<li>/proc/pressure/memory: PSI 메트릭 (avg10, avg60, avg300, total 등)</li>
+<li>앱 레벨: process.memoryUsage() (rss, heapUsed, external, arrayBuffers)</li>
+<li>앱 레벨: requestCount, cpuUsage</li>
 </ul>
-<h3 id="controlled-variables-held-constant">Controlled Variables (held constant):<a class="headerlink" href="#controlled-variables-held-constant" title="Permanent link">&para;</a></h3>
+<h3 id="_9">통제 변수 (일정하게 유지하는 요소):<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Plan SKU: B1 (1 vCPU, 1.75 GB RAM)</li>
-<li>Region: koreacentral</li>
-<li>Node.js version: 20-lts</li>
-<li>Traffic pattern: 1 request per 10 seconds per app (steady-traffic.mjs)</li>
-<li>App code: identical across all apps (only ALLOC_MB and APP_NAME differ)</li>
+<li>플랜 SKU: B1 (1 vCPU, 1.75 GB RAM)</li>
+<li>리전: koreacentral</li>
+<li>Node.js 버전: 20-lts</li>
+<li>트래픽 패턴: 앱당 10초당 1개 요청 (steady-traffic.mjs)</li>
+<li>앱 코드: 모든 앱이 동일함 (ALLOC_MB 및 APP_NAME만 다름)</li>
 </ul>
-<h2 id="experiment-matrix">Experiment Matrix<a class="headerlink" href="#experiment-matrix" title="Permanent link">&para;</a></h2>
+<h2 id="_10">실험 매트릭스<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Phase</th>
-<th>Deploy Mode</th>
-<th>Apps</th>
+<th>단계</th>
+<th>배포 모드</th>
+<th>앱 개수</th>
 <th>ALLOC_MB</th>
-<th>Target Memory%</th>
-<th>Traffic</th>
-<th>Duration</th>
-<th>Purpose</th>
+<th>대상 메모리%</th>
+<th>트래픽</th>
+<th>기간</th>
+<th>목적</th>
 </tr>
 </thead>
 <tbody>
@@ -700,9 +697,9 @@ unexpected CPU spikes even though application traffic load has not increased.</p
 <td>2</td>
 <td>50</td>
 <td>~40%</td>
-<td>None→Light</td>
-<td>15 min</td>
-<td>Discovery: verify swap, metrics pipeline</td>
+<td>없음→가벼움</td>
+<td>15분</td>
+<td>탐색: swap 및 메트릭 파이프라인 확인</td>
 </tr>
 <tr>
 <td>1</td>
@@ -710,9 +707,9 @@ unexpected CPU spikes even though application traffic load has not increased.</p
 <td>2</td>
 <td>50</td>
 <td>~50-60%</td>
-<td>Light</td>
-<td>30-60 min</td>
-<td>Baseline: CPU/memory/swap under low pressure</td>
+<td>가벼움</td>
+<td>30-60분</td>
+<td>기준치: 낮은 압박에서의 CPU/메모리/swap</td>
 </tr>
 <tr>
 <td>2a</td>
@@ -720,9 +717,9 @@ unexpected CPU spikes even though application traffic load has not increased.</p
 <td>4</td>
 <td>100</td>
 <td>~80-85%</td>
-<td>Light</td>
-<td>60 min</td>
-<td>Approach plateau</td>
+<td>가벼움</td>
+<td>60분</td>
+<td>고점 접근</td>
 </tr>
 <tr>
 <td>2b</td>
@@ -730,79 +727,79 @@ unexpected CPU spikes even though application traffic load has not increased.</p
 <td>6</td>
 <td>100</td>
 <td>~88-92%</td>
-<td>Light</td>
-<td>60-120 min</td>
-<td><strong>Core test</strong>: high memory, flat traffic → CPU?</td>
+<td>가벼움</td>
+<td>60-120분</td>
+<td><strong>핵심 테스트</strong>: 높은 메모리, 일정한 트래픽 → CPU?</td>
 </tr>
 <tr>
 <td>3</td>
 <td>ZIP</td>
-<td>(same as 2b)</td>
-<td>(same)</td>
+<td>(2b와 동일)</td>
+<td>(동일)</td>
 <td>~88-92%</td>
-<td>Burst 60s</td>
-<td>10 min</td>
-<td>Traffic burst at high memory</td>
+<td>60초 버스트</td>
+<td>10분</td>
+<td>높은 메모리 상황에서의 트래픽 버스트</td>
 </tr>
 <tr>
 <td>4</td>
 <td>Container</td>
-<td>(repeat phases 0-3)</td>
+<td>(0-3단계 반복)</td>
 <td></td>
 <td></td>
 <td></td>
 <td></td>
-<td>Compare deployment modes</td>
+<td>배포 모드 간 비교</td>
 </tr>
 </tbody>
 </table>
-<h2 id="risk-register">Risk Register<a class="headerlink" href="#risk-register" title="Permanent link">&para;</a></h2>
+<h2 id="_11">리스크 레지스터<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Risk</th>
-<th>Impact</th>
-<th>Mitigation</th>
+<th>리스크</th>
+<th>영향</th>
+<th>완화 방안</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>SwapTotal = 0 on B1</td>
-<td>Cannot prove swap-specific chain</td>
-<td>Revise to "reclaim-driven CPU" hypothesis</td>
+<td>B1에서 SwapTotal = 0</td>
+<td>swap 관련 체인을 증명할 수 없음</td>
+<td>"회수 주도형 CPU(reclaim-driven CPU)" 가설로 수정</td>
 </tr>
 <tr>
-<td>/proc is container-scoped</td>
-<td>Counters don't reflect host</td>
-<td>Use plan-level Azure Monitor + cgroup stats as primary</td>
+<td>/proc이 컨테이너 범위로 제한됨</td>
+<td>카운터가 호스트를 반영하지 못함</td>
+<td>플랜 레벨의 Azure Monitor + cgroup 통계를 주 지표로 사용</td>
 </tr>
 <tr>
-<td>MemoryPercentage doesn't reflect containers</td>
-<td>Can't reach 90% target</td>
-<td>Use ZIP deploy as primary evidence</td>
+<td>MemoryPercentage가 컨테이너를 반영하지 않음</td>
+<td>목표치인 90%에 도달하지 못함</td>
+<td>ZIP 배포를 주요 증거로 활용</td>
 </tr>
 <tr>
-<td>Platform noise masks signal</td>
-<td>Ambiguous results</td>
-<td>Repeat 3x per configuration</td>
+<td>플랫폼 노이즈가 신호를 가림</td>
+<td>결과가 모호해짐</td>
+<td>설정당 3회 반복 실시</td>
 </tr>
 <tr>
-<td>B1 single vCPU</td>
-<td>Reclaim competes directly with app</td>
-<td>Actually supports hypothesis — single CPU makes it MORE visible</td>
+<td>B1 싱글 vCPU</td>
+<td>회수 활동이 앱과 직접 경쟁함</td>
+<td>가설을 오히려 뒷받침함 — 싱글 CPU 환경에서 현상이 더 잘 드러남</td>
 </tr>
 </tbody>
 </table>
-<h2 id="key-metric-relationship">Key Metric Relationship<a class="headerlink" href="#key-metric-relationship" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>If hypothesis is TRUE, we expect this correlation:
+<h2 id="_12">주요 메트릭 관계<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>가설이 참(TRUE)일 경우 기대되는 상관관계:
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>MemoryUsed ↑ → SwapFree ↓ → pgscan_kswapd ↑ → CpuPercentage ↑
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>                              (while request_rate stays flat)
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>                               (request_rate가 일정하게 유지되는 동안)
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>If hypothesis is FALSE:
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>가설이 거짓(FALSE)일 경우:
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>MemoryUsed ↑ → SwapFree ↓ → pgscan_kswapd flat → CpuPercentage flat
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>                              (kernel handles pressure without CPU cost)
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>MemoryUsed ↑ → SwapFree ↓ → pgscan_kswapd 일정 → CpuPercentage 일정
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>                               (커널이 CPU 비용 없이 압박을 처리함)
 </code></pre></div>
 
 
@@ -827,7 +824,7 @@ unexpected CPU spikes even though application traffic load has not increased.</p
           <button type="button" class="md-top md-icon" data-md-component="top" hidden>
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
-  Back to top
+  맨위로
 </button>
         
       </main>
@@ -859,10 +856,10 @@ unexpected CPU spikes even though application traffic load has not increased.</p
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "content.code.copy", "toc.integrate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "content.code.copy", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
