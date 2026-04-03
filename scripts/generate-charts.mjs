@@ -124,7 +124,6 @@ function chartBaseOptions(title) {
   return {
     responsive: false,
     maintainAspectRatio: false,
-    parsing: false,
     scales: {
       x: {
         grid: { color: 'rgba(127, 140, 141, 0.15)' },

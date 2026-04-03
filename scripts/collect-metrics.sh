@@ -6,6 +6,7 @@ RESOURCE_GROUP="${RESOURCE_GROUP:-rg-node-memory-lab}"
 NAME_PREFIX="${NAME_PREFIX:-memlabnode}"
 APP_COUNT="${APP_COUNT:-2}"
 OUTPUT_DIR="${OUTPUT_DIR:-results}"
+PLAN_NAME="${PLAN_NAME:-${NAME_PREFIX}-plan}"
 
 WATCH_SECONDS=""
 STOP_REQUESTED=0
@@ -43,7 +44,7 @@ trap on_sigint INT TERM
 
 resolve_apps() {
   local query="[?starts_with(name,'${NAME_PREFIX}')].name"
-  mapfile -t ALL_APPS < <(az webapp list --resource-group "$RESOURCE_GROUP" --query "$query" --output tsv)
+  mapfile -t ALL_APPS < <(az webapp list --resource-group "$RESOURCE_GROUP" --query "$query" --output tsv | tr -d '\r')
 
   APPS=()
   local max_count="$APP_COUNT"
@@ -64,22 +65,36 @@ append_summary_from_metrics() {
   local resource_type="$3"
   local resource_id="$4"
   local metric_list="$5"
+  local interval="${6:-PT1M}"
+  local offset="${7:-5m}"
 
   az monitor metrics list \
     --resource "$resource_id" \
     --metric "$metric_list" \
     --aggregation Average Maximum \
-    --interval PT1M \
-    --offset 5m \
-    --query "value[].{metric:name.value,avg:timeseries[0].data[-1].average,max:timeseries[0].data[-1].maximum,total:timeseries[0].data[-1].total,count:timeseries[0].data[-1].count}" \
-    --output tsv | while IFS=$'\t' read -r metric avg max total count; do
-      local value="$avg"
-      if [[ -z "$value" ]]; then value="$max"; fi
-      if [[ -z "$value" ]]; then value="$total"; fi
-      if [[ -z "$value" ]]; then value="$count"; fi
-      if [[ -z "$value" ]]; then value=""; fi
-      printf '%s,%s,%s,%s,%s\n' "$snap_ts" "$resource_name" "$resource_type" "$metric" "$value" >> "$SUMMARY_CSV"
-    done
+    --interval "$interval" \
+    --offset "$offset" \
+    --output json 2>/dev/null \
+  | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+snap_ts = sys.argv[1]
+resource_name = sys.argv[2]
+resource_type = sys.argv[3]
+for v in data.get('value', []):
+    metric = v.get('name', {}).get('value', 'unknown')
+    ts_list = v.get('timeseries', [])
+    if not ts_list:
+        continue
+    dp_list = ts_list[0].get('data', [])
+    if not dp_list:
+        continue
+    last = dp_list[-1]
+    val = last.get('average') or last.get('maximum') or last.get('total') or ''
+    if val == '' or val is None:
+        continue
+    print(f'{snap_ts},{resource_name},{resource_type},{metric},{val}')
+" "$snap_ts" "$resource_name" "$resource_type" >> "$SUMMARY_CSV" 2>/dev/null || true
 }
 
 collect_once() {
@@ -92,11 +107,10 @@ collect_once() {
     return 1
   fi
 
-  local first_app="${APPS[0]}"
   local plan_id
-  plan_id="$(az webapp show --resource-group "$RESOURCE_GROUP" --name "$first_app" --query serverFarmId --output tsv)"
+  plan_id="$(az appservice plan show --resource-group "$RESOURCE_GROUP" --name "$PLAN_NAME" --query id --output tsv 2>/dev/null | tr -d '\r' || true)"
   if [[ -z "$plan_id" ]]; then
-    echo "[metrics] could not resolve plan id from app=$first_app"
+    echo "[metrics] could not resolve plan id for plan=$PLAN_NAME in rg=$RESOURCE_GROUP"
     return 1
   fi
 
@@ -115,9 +129,8 @@ collect_once() {
   append_summary_from_metrics "$timestamp" "$plan_id" "plan" "$plan_id" "CpuPercentage,MemoryPercentage"
 
   for app in "${APPS[@]}"; do
-    local app_id
-    app_id="$(az webapp show --resource-group "$RESOURCE_GROUP" --name "$app" --query id --output tsv)"
-    if [[ -z "$app_id" ]]; then
+    local app_id="/subscriptions/$(az account show --query id --output tsv 2>/dev/null | tr -d '\r')/resourceGroups/${RESOURCE_GROUP}/providers/Microsoft.Web/sites/${app}"
+    if [[ -z "$app_id" || "$app_id" == */sites/ ]]; then
       echo "[metrics] skip app=$app (no resource id)"
       continue
     fi
@@ -130,11 +143,11 @@ collect_once() {
       --resource "$app_id" \
       --metric "CpuTime,Requests,MemoryWorkingSet,AverageMemoryWorkingSet,Http5xx,HealthCheckStatus" \
       --aggregation Average Maximum \
-      --interval PT1M \
-      --offset 5m \
+      --interval PT5M \
+      --offset 10m \
       --output json > "$app_file"
 
-    append_summary_from_metrics "$timestamp" "$app" "app" "$app_id" "CpuTime,Requests,MemoryWorkingSet,AverageMemoryWorkingSet,Http5xx,HealthCheckStatus"
+    append_summary_from_metrics "$timestamp" "$app" "app" "$app_id" "CpuTime,Requests,MemoryWorkingSet,AverageMemoryWorkingSet,Http5xx,HealthCheckStatus" "PT5M" "10m"
   done
 
   echo "[metrics] collection complete ts=$timestamp apps=${#APPS[@]}"

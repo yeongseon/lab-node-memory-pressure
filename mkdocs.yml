@@ -1,0 +1,44 @@
+site_name: "Node.js Memory Pressure Lab"
+site_description: "Experiment: Does Linux kernel page reclaim cause CPU increases under memory pressure on Azure App Service?"
+repo_url: "https://github.com/yeongseon/lab-node-memory-pressure"
+repo_name: "yeongseon/lab-node-memory-pressure"
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - content.code.copy
+    - toc.integrate
+
+markdown_extensions:
+  - tables
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Hypothesis: hypothesis.md
+  - Experiment Results: experiment-log.md
+  - Runbook: runbook.md
