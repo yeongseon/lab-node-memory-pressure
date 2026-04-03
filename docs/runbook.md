@@ -14,7 +14,7 @@ Step-by-step execution guide for the memory pressure experiment.
 
 ```bash
 az login
-az account set --subscription "***REDACTED***"
+az account set --subscription "<YOUR_SUBSCRIPTION_ID>"
 ```
 
 ## Environment Variables

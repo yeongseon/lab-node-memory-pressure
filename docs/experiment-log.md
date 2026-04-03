@@ -9,7 +9,7 @@ When an Azure B1 Linux App Service Plan hosts multiple Node.js applications that
 
 ### Environment Details
 - **Experiment Period**: ~4-5 hours (including deployment transitions and recovery)
-- **Subscription ID**: ***REDACTED***
+- **Subscription ID**: *(redacted)*
 - **Resource Group**: rg-node-memory-lab
 - **Region**: Korea Central
 - **Plan SKU**: B1 (1 vCPU, 1.75 GB RAM, Linux)
