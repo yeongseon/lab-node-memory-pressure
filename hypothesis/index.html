@@ -1,0 +1,839 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Experiment: Does Linux kernel page reclaim cause CPU increases under memory pressure on Azure App Service?">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../experiment-log/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+    
+    
+      
+        <title>Hypothesis - Node.js Memory Pressure Lab</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#hypothesis-kernel-page-reclaim-under-memory-pressure-causes-cpu-increase" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Node.js Memory Pressure Lab" class="md-header__button md-logo" aria-label="Node.js Memory Pressure Lab" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Node.js Memory Pressure Lab
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Hypothesis
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/yeongseon/lab-node-memory-pressure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yeongseon/lab-node-memory-pressure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Node.js Memory Pressure Lab" class="md-nav__button md-logo" aria-label="Node.js Memory Pressure Lab" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Node.js Memory Pressure Lab
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/yeongseon/lab-node-memory-pressure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yeongseon/lab-node-memory-pressure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hypothesis
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hypothesis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#customer-scenario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customer Scenario
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#causal-chain-hypothesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Causal Chain (Hypothesis)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-we-need-to-prove-or-disprove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What We Need to Prove or Disprove
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What We Need to Prove or Disprove">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#proof-criteria-all-must-be-met" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proof criteria (ALL must be met):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disproof-criteria-any-sufficient" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disproof criteria (ANY sufficient):
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#independent-variables-what-we-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Independent Variables (what we control):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependent-variables-what-we-measure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependent Variables (what we measure):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controlled-variables-held-constant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controlled Variables (held constant):
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#experiment-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Experiment Matrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#risk-register" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk Register
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-metric-relationship" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Metric Relationship
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../experiment-log/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiment Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="hypothesis-kernel-page-reclaim-under-memory-pressure-causes-cpu-increase">Hypothesis: Kernel Page Reclaim Under Memory Pressure Causes CPU Increase<a class="headerlink" href="#hypothesis-kernel-page-reclaim-under-memory-pressure-causes-cpu-increase" title="Permanent link">&para;</a></h1>
+<h2 id="customer-scenario">Customer Scenario<a class="headerlink" href="#customer-scenario" title="Permanent link">&para;</a></h2>
+<p>An Azure App Service Plan (B1, Linux) hosts many Node.js applications. Over time,
+worker-level memory usage accumulates to approximately 90%. The customer observes
+unexpected CPU spikes even though application traffic load has not increased.</p>
+<p><strong>Source metric</strong>: Azure Portal → Diagnose and solve problems → Instance Memory Usage
+(App Service Plan) shows <code>PercentPhysicalMemoryUsed</code> at ~90% across all worker instances.</p>
+<h2 id="causal-chain-hypothesis">Causal Chain (Hypothesis)<a class="headerlink" href="#causal-chain-hypothesis" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>1. Multiple Node.js apps share the same App Service Plan worker(s)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>       ↓
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>2. Each app consumes memory over time (caches, buffers, V8 heap growth)
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>       ↓
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>3. Worker-level physical memory usage climbs toward ~90%
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>       ↓
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>4. Free memory decreases; OS buffer/cache shrinks
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>       ↓
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>5. Swap space (if available) gets progressively consumed
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>       ↓
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>6. Linux kernel activates page reclaim mechanisms:
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>   - kswapd (background page scanner)
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>   - direct reclaim (synchronous, blocks allocation)
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>   - page writeback (dirty pages flushed to disk)
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>       ↓
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>7. Page reclaim consumes CPU cycles independently of application workload
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>       ↓
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>8. CpuPercentage rises even though request throughput is flat or low
+</code></pre></div>
+<h2 id="what-we-need-to-prove-or-disprove">What We Need to Prove or Disprove<a class="headerlink" href="#what-we-need-to-prove-or-disprove" title="Permanent link">&para;</a></h2>
+<h3 id="proof-criteria-all-must-be-met">Proof criteria (ALL must be met):<a class="headerlink" href="#proof-criteria-all-must-be-met" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Memory sustained at ≥88%</strong> for 30+ minutes on the worker/plan metric</li>
+<li><strong>Traffic is flat</strong>: request rate within ±10% of baseline, no bursts during observation</li>
+<li><strong>CPU rises materially</strong>: CpuPercentage ≥2x baseline OR +10 percentage points sustained for 15+ minutes</li>
+<li><strong>Reclaim activity visible</strong>: sustained increase in at least 2 of:</li>
+<li><code>pgscan_kswapd</code> (pages scanned by kswapd)</li>
+<li><code>pgscan_direct</code> (pages scanned by direct reclaim)</li>
+<li><code>pgsteal_kswapd</code> (pages reclaimed by kswapd)</li>
+<li><code>pgsteal_direct</code> (pages reclaimed by direct reclaim)</li>
+<li><code>allocstall</code> (allocation stalls due to reclaim)</li>
+<li>PSI memory pressure (<code>/proc/pressure/memory</code>)</li>
+<li><strong>Swap-specific proof</strong> (only if SwapTotal &gt; 0):</li>
+<li>SwapFree decreases over time</li>
+<li>pswpin/pswpout counters increase during CPU rise</li>
+</ol>
+<h3 id="disproof-criteria-any-sufficient">Disproof criteria (ANY sufficient):<a class="headerlink" href="#disproof-criteria-any-sufficient" title="Permanent link">&para;</a></h3>
+<ul>
+<li>High memory is sustained with flat traffic, but CPU and reclaim counters stay near baseline across repeated runs</li>
+<li>CPU rises, but reclaim counters show no activity (CPU increase from another cause)</li>
+<li>SwapTotal = 0 AND no reclaim counters rise (no kernel memory pressure mechanism active)</li>
+</ul>
+<h2 id="variables">Variables<a class="headerlink" href="#variables" title="Permanent link">&para;</a></h2>
+<h3 id="independent-variables-what-we-control">Independent Variables (what we control):<a class="headerlink" href="#independent-variables-what-we-control" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Number of apps on the plan (2 → 4 → 6 → 8)</li>
+<li>Memory allocation per app (ALLOC_MB: 50 → 100 → 150 → 200)</li>
+<li>Deployment mode (ZIP deploy vs Web App for Containers)</li>
+<li>Traffic rate (fixed light: 1 req/10s/app)</li>
+</ul>
+<h3 id="dependent-variables-what-we-measure">Dependent Variables (what we measure):<a class="headerlink" href="#dependent-variables-what-we-measure" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Plan CpuPercentage (Azure Monitor, 1-min granularity)</li>
+<li>Plan MemoryPercentage (Azure Monitor, 1-min granularity)</li>
+<li>PercentPhysicalMemoryUsed (Diagnostics blade, if accessible)</li>
+<li>/proc/meminfo: MemTotal, MemFree, MemAvailable, SwapTotal, SwapFree, Cached, Dirty, SReclaimable</li>
+<li>/proc/vmstat: pswpin, pswpout, pgscan_kswapd, pgscan_direct, pgsteal_kswapd, pgsteal_direct, pgfault, pgmajfault, allocstall</li>
+<li>/proc/pressure/memory: PSI metrics (some avg10, avg60, avg300, total)</li>
+<li>App-level: process.memoryUsage() (rss, heapUsed, external, arrayBuffers)</li>
+<li>App-level: requestCount, cpuUsage</li>
+</ul>
+<h3 id="controlled-variables-held-constant">Controlled Variables (held constant):<a class="headerlink" href="#controlled-variables-held-constant" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Plan SKU: B1 (1 vCPU, 1.75 GB RAM)</li>
+<li>Region: koreacentral</li>
+<li>Node.js version: 20-lts</li>
+<li>Traffic pattern: 1 request per 10 seconds per app (steady-traffic.mjs)</li>
+<li>App code: identical across all apps (only ALLOC_MB and APP_NAME differ)</li>
+</ul>
+<h2 id="experiment-matrix">Experiment Matrix<a class="headerlink" href="#experiment-matrix" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Deploy Mode</th>
+<th>Apps</th>
+<th>ALLOC_MB</th>
+<th>Target Memory%</th>
+<th>Traffic</th>
+<th>Duration</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>ZIP</td>
+<td>2</td>
+<td>50</td>
+<td>~40%</td>
+<td>None→Light</td>
+<td>15 min</td>
+<td>Discovery: verify swap, metrics pipeline</td>
+</tr>
+<tr>
+<td>1</td>
+<td>ZIP</td>
+<td>2</td>
+<td>50</td>
+<td>~50-60%</td>
+<td>Light</td>
+<td>30-60 min</td>
+<td>Baseline: CPU/memory/swap under low pressure</td>
+</tr>
+<tr>
+<td>2a</td>
+<td>ZIP</td>
+<td>4</td>
+<td>100</td>
+<td>~80-85%</td>
+<td>Light</td>
+<td>60 min</td>
+<td>Approach plateau</td>
+</tr>
+<tr>
+<td>2b</td>
+<td>ZIP</td>
+<td>6</td>
+<td>100</td>
+<td>~88-92%</td>
+<td>Light</td>
+<td>60-120 min</td>
+<td><strong>Core test</strong>: high memory, flat traffic → CPU?</td>
+</tr>
+<tr>
+<td>3</td>
+<td>ZIP</td>
+<td>(same as 2b)</td>
+<td>(same)</td>
+<td>~88-92%</td>
+<td>Burst 60s</td>
+<td>10 min</td>
+<td>Traffic burst at high memory</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Container</td>
+<td>(repeat phases 0-3)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Compare deployment modes</td>
+</tr>
+</tbody>
+</table>
+<h2 id="risk-register">Risk Register<a class="headerlink" href="#risk-register" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SwapTotal = 0 on B1</td>
+<td>Cannot prove swap-specific chain</td>
+<td>Revise to "reclaim-driven CPU" hypothesis</td>
+</tr>
+<tr>
+<td>/proc is container-scoped</td>
+<td>Counters don't reflect host</td>
+<td>Use plan-level Azure Monitor + cgroup stats as primary</td>
+</tr>
+<tr>
+<td>MemoryPercentage doesn't reflect containers</td>
+<td>Can't reach 90% target</td>
+<td>Use ZIP deploy as primary evidence</td>
+</tr>
+<tr>
+<td>Platform noise masks signal</td>
+<td>Ambiguous results</td>
+<td>Repeat 3x per configuration</td>
+</tr>
+<tr>
+<td>B1 single vCPU</td>
+<td>Reclaim competes directly with app</td>
+<td>Actually supports hypothesis — single CPU makes it MORE visible</td>
+</tr>
+</tbody>
+</table>
+<h2 id="key-metric-relationship">Key Metric Relationship<a class="headerlink" href="#key-metric-relationship" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>If hypothesis is TRUE, we expect this correlation:
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>MemoryUsed ↑ → SwapFree ↓ → pgscan_kswapd ↑ → CpuPercentage ↑
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>                              (while request_rate stays flat)
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>If hypothesis is FALSE:
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>MemoryUsed ↑ → SwapFree ↓ → pgscan_kswapd flat → CpuPercentage flat
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>                              (kernel handles pressure without CPU cost)
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "content.code.copy", "toc.integrate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
