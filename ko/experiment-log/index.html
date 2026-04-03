@@ -871,17 +871,17 @@
 </ul>
 <h3 id="zip_1">시각화 (ZIP 배포)<a class="headerlink" href="#zip_1" title="Permanent link">&para;</a></h3>
 <p><img alt="CPU and Memory Timeline" src="../../assets/charts/zip-deploy/cpu-memory-timeline.png" />
-<em>그림 1: ZIP Deploy 단계별 CPU와 Memory 상관관계.</em></p>
+<em>그림 1: App Service Plan CPU%(주황색)와 Memory%(빨간색)를 0-100% 공유 스케일로 표시. 앱 스케일업에 따라 두 메트릭이 함께 상승하며, CPU는 ~15%에서 47%로, Memory는 92%까지 도달.</em></p>
 <p><img alt="Kernel Reclaim Activity" src="../../assets/charts/zip-deploy/kernel-reclaim-timeline.png" />
-<em>그림 2: pgscan_kswapd 및 pgscan_direct 카운터의 에스컬레이션.</em></p>
+<em>그림 2: Linux 커널 페이지 reclaim 카운터(구간당 Δ). pgscan_kswapd 및 pgscan_direct의 급격한 증가는 Memory Pressure 하에서 커널이 적극적으로 페이지를 회수하고 있음을 확인.</em></p>
 <p><img alt="Swap Activity" src="../../assets/charts/zip-deploy/swap-activity-timeline.png" />
-<em>그림 3: swap 고갈 시점의 격렬한 pswpin/pswpout 활동.</em></p>
+<em>그림 3: Swap I/O 활동(구간당 Δ). 격렬한 pswpin/pswpout 스파이크가 높은 메모리 단계와 상관관계를 보이며, 커널이 RAM과 디스크 사이에서 페이지를 이동하는 swap thrashing을 확인.</em></p>
 <p><img alt="Memory Breakdown" src="../../assets/charts/zip-deploy/memory-breakdown-timeline.png" />
-<em>그림 4: MemAvailable, Cached, SwapFree의 세부 분석.</em></p>
+<em>그림 4: /proc/meminfo 기반 OS 수준 메모리 분석. 앱 메모리 할당이 증가함에 따라 MemFree, MemAvailable, Cached, SwapFree가 감소하는 모습.</em></p>
 <p><img alt="App RSS" src="../../assets/charts/zip-deploy/app-rss-timeline.png" />
-<em>그림 5: 시간 경과에 따른 앱별 Memory 사용량(RSS).</em></p>
+<em>그림 5: 앱별 RSS(Resident Set Size, MB). 각 앱의 메모리 사용량이 단계별 ALLOC_MB 증가에 따라 성장.</em></p>
 <p><img alt="Burst Latency Distribution" src="../../assets/charts/zip-deploy/burst-latency-distribution.png" />
-<em>그림 6: 버스트 트래픽 Latency 히스토그램.</em></p>
+<em>그림 6: Phase 3 트래픽 버스트(10 RPS × 60초) 중 Latency 히스토그램. Memory Pressure 하에서의 요청 지연 분포를 표시.</em></p>
 <p><img alt="Traffic Volume vs CPU vs Memory" src="../../assets/charts/zip-deploy/traffic-cpu-timeline.png" />
 <em>그림 7: Memory Pressure 실험 — ZIP 배포. 모든 단계에서 트래픽(요청 속도)은 ~6 RPM으로 일정하게 유지된 반면, Memory 사용률은 ~80%에서 ~92%까지 상승하고 CPU는 ~15%에서 35% 이상으로 동반 상승 — CPU 증가가 트래픽이 아닌 Memory Pressure에 의한 것임을 확인.</em></p>
 <hr />
@@ -927,13 +927,13 @@
 </ul>
 <h3 id="_5">시각화 (컨테이너 배포)<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
 <p><img alt="CPU and Memory Timeline" src="../../assets/charts/container-deploy/cpu-memory-timeline.png" />
-<em>그림 8: 컨테이너화된 애플리케이션의 CPU 및 Memory 추세.</em></p>
+<em>그림 8: 컨테이너 배포의 App Service Plan CPU%(주황색)와 Memory%(빨간색)를 0-100% 공유 스케일로 표시. Memory는 ~75-82%를 유지하는 반면, CPU는 컨테이너 스케일링 이벤트(Phase 2a) 중 84%까지 급등 후 10-24%로 안정화.</em></p>
 <p><img alt="Kernel Reclaim Activity" src="../../assets/charts/container-deploy/kernel-reclaim-timeline.png" />
-<em>그림 9: 컨테이너 환경에서의 reclaim 활동.</em></p>
+<em>그림 9: 컨테이너 환경의 커널 페이지 reclaim 활동. pgscan_kswapd 및 pgscan_direct 카운터가 ZIP 배포 대비 완만한 reclaim을 보임.</em></p>
 <p><img alt="Swap Activity" src="../../assets/charts/container-deploy/swap-activity-timeline.png" />
-<em>그림 10: 컨테이너 실험 중의 swap 활동.</em></p>
+<em>그림 10: 컨테이너 실험 중 Swap I/O. 컨테이너 격리로 swap 사용률이 ~49%로 제한되어 ZIP 배포보다 낮은 강도.</em></p>
 <p><img alt="Burst Latency Distribution" src="../../assets/charts/container-deploy/burst-latency-distribution.png" />
-<em>그림 11: 컨테이너 트래픽 버스트 중 관찰된 높은 Latency 분산.</em></p>
+<em>그림 11: 컨테이너 Phase 3 버스트 Latency 히스토그램. ZIP 대비 높은 분산(평균 174ms vs 17ms)으로 컨테이너가 Memory Pressure에 더 민감함을 확인.</em></p>
 <p><img alt="Traffic Volume vs CPU vs Memory" src="../../assets/charts/container-deploy/traffic-cpu-timeline.png" />
 <em>그림 12: Memory Pressure 실험 — 컨테이너 배포. 트래픽(요청 속도)은 ~12 RPM으로 일관되게 낮은 수준을 유지한 반면, Memory는 ~80%에서 안정적이었고 CPU는 Pressure 단계에서 10-51% 사이로 변동. 참고: 메트릭 수집 간격이 ZIP 배포보다 sparse (~2분 간격).</em></p>
 <hr />
