@@ -129,7 +129,7 @@ The following diagram illustrates the competition for CPU resources on a single-
 
 ```mermaid
 flowchart LR
-    subgraph Single vCPU
+    subgraph SingleVCPU["Single vCPU"]
         direction TB
         APP[Application Code]
         LRU[LRU Scanning]
@@ -139,7 +139,7 @@ flowchart LR
         LOCK[Lock Contention]
     end
     
-    CPU[1 CPU Core] --> Single vCPU
+    CPU[1 CPU Core] --> SingleVCPU
     
     APP -.->|competes with| LRU
     APP -.->|competes with| PT
