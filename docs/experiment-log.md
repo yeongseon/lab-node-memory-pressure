@@ -146,7 +146,27 @@ An attempt to run 6 containers at 100MB each caused complete plan destabilizatio
 
 ---
 
+## Why Is Baseline Memory Already High?
+
+Before interpreting the results, it is important to understand why memory utilization starts at 79-80% even with only 2 apps allocating 50MB each.
+
+The B1 SKU provides ~1,855 MB of physical RAM (as seen via `/proc/meminfo` MemTotal). However, a significant portion is consumed before any user application starts:
+
+- **Platform / host runtime overhead**: The App Service Linux sandbox, Kudu (SCM) sidecar, and container runtime processes consume a baseline amount of memory.
+- **Language runtime footprint**: Each Node.js 20 process has a base RSS of ~30-40 MB before any user-allocated memory, due to V8 heap initialization, libuv, and loaded modules.
+- **Linux page cache**: The kernel uses available memory for file-system caching (`Cached` in `/proc/meminfo`). This is reclaimable under pressure, but it is counted toward the Azure Monitor `MemoryPercentage` metric.
+- **MemoryPercentage ≠ app RSS sum**: Azure Monitor reports plan-level physical memory usage, which includes all of the above. The sum of app-level RSS values from `process.memoryUsage()` will always be significantly less than what the platform reports.
+
+This is visible in the **Memory Breakdown** chart (Figure 4) and the **App RSS** chart (Figure 5), which show that app RSS accounts for only a fraction of total memory usage. The gap is platform overhead and cached pages.
+
+---
+
 ## Comparison: ZIP vs. Container
+
+!!! warning "Scope of Comparison"
+    The following comparison reflects behavior observed **under this specific B1 Linux lab setup**. Results may differ on higher SKUs, different runtimes, or production workloads with different memory profiles.
+
+Under this B1 Linux lab setup, ZIP deployment tolerated a denser memory-pressure experiment than container deployment. This should not be generalized to all deployment scenarios.
 
 | Metric | ZIP Deploy (6x100MB) | Container Deploy (4x75MB) |
 | :--- | :--- | :--- |
@@ -165,10 +185,21 @@ An attempt to run 6 containers at 100MB each caused complete plan destabilizatio
 
 ### Hypothesis Status: PARTIALLY SUPPORTED
 
-The experiment confirms that memory pressure drives CPU increases via kernel reclaim activity, though the behavior differs by deployment type:
+This lab strongly supports the claim that aggregate memory pressure on low-tier Linux App Service Plans can drive non-application CPU consumption through kernel reclaim and swap activity. In this specific setup, the effect on steady-state request latency was limited for ZIP deployment, while container deployment tended to destabilize earlier rather than degrade gradually.
 
 - **ZIP Deploy**: The hypothesis is strongly supported. CPU usage increased by 1.75x (from 20% to 35% avg) purely due to kernel activity. The near-total exhaustion of swap triggered massive increases in `pgscan_direct` (+14,200%) and `pswpin` (+1,500%), correlating directly with CPU spikes.
 - **Container Deploy**: The primary risk is destabilization rather than gradual CPU creep. The container runtime introduces enough overhead that a B1 plan fails to reach the same level of sustained memory pressure before applications crash. However, request latency is significantly worse (10x) for containers under pressure compared to ZIP.
+
+### Limitations
+
+This experiment successfully demonstrates the CPU/reclaim mechanism, but has limitations regarding proof of user-visible service degradation:
+
+1. **Latency impact was limited for ZIP**: Despite a 1.75x CPU increase, burst latency remained low (avg 16.8ms, p99 62ms). The CPU overhead was real but did not cause measurable request degradation in this test.
+2. **Short observation windows**: Phase 2b ran for 60 minutes (ZIP) and 28 minutes (container). Longer steady-state observation (hours to days) may reveal cumulative effects not captured here.
+3. **Synthetic workload**: The test app serves simple HTTP responses. Real applications with heavier computation, database queries, or file I/O may be more sensitive to CPU contention from kernel reclaim.
+4. **Single burst test**: Phase 3 tested one 60-second burst at 10 RPS. A more thorough evaluation would include varied request patterns, lower timeout margins, and separation of warm-path vs cold-path responses.
+
+To make a stronger claim about user-visible degradation, future experiments should include longer observation periods, more realistic workloads, and fine-grained latency percentile tracking over extended time.
 
 ### Customer Recommendations
 
@@ -176,7 +207,6 @@ The experiment confirms that memory pressure drives CPU increases via kernel rec
 2. **Monitor Reclaim Counters**: If CPU spikes occur without a corresponding increase in traffic, check for `pgscan_kswapd` and `pgscan_direct` activity. These are leading indicators of memory-driven performance degradation.
 3. **Container Limitations**: Avoid hosting more than 2-3 containers on a single B1 plan if they have non-trivial memory requirements. The startup overhead and runtime isolation lead to earlier OOM events and higher latency variance.
 4. **Scaling Strategy**: If your application consistently operates above 80% memory, scale up to the B2 or B3 SKU. The additional RAM will reduce reliance on the 2GB swap partition and stabilize CPU performance.
-5. **ZIP vs. Container**: For maximum density on small SKUs like B1, ZIP deployment is more efficient. Containers provide better isolation but consume significantly more resources, leading to plan-wide failures when over-provisioned.
 
 ---
 
